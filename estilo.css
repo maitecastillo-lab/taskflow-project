@@ -37,6 +37,7 @@ nav a:visited{
 a{
     text-decoration: none; /*para quitarle esa linea que sale*/
     position: relative;
+    color: var(--color-texto);
 }
 nav a:hover{
     text-shadow: 2px 2px 10px var(--color-texto);
@@ -208,5 +209,12 @@ nav a:hover{
     /* Tu código del grid que ya tenías... */
     #sobre-mi {
         grid-template-columns: 1fr;
+    }
+    header {
+        width: 100%;        /* Ocupa todo el ancho */
+        box-sizing: border-box; /* Evita que el padding "estire" el header fuera de la pantalla */
+        padding: 10px 15px; /* Espacio más pequeño para que quepa todo */
+        position: sticky;
+        top: 0;
     }
 }
