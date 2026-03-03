@@ -215,6 +215,6 @@ nav a:hover{
         box-sizing: border-box; /* Evita que el padding "estire" el header fuera de la pantalla */
         padding: 10px 15px; /* Espacio más pequeño para que quepa todo */
         position: sticky;
-        top: 0; /*si*/
+        top: 0;
     }
 }
