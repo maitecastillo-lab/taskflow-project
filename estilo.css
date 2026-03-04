@@ -5,7 +5,19 @@
     --color-tarjetas: #ffffff;
     --fondo-general: #0f172a;
 }
-body{
+* {
+    box-sizing: border-box; /* es para que el padding no se haga grande y no genere el 
+                            scroll si no que se ajuste a este */
+}
+html {
+    scroll-behavior: smooth; /*esto es para tener un movimiento no brusco a la hora d deslizar*/
+}
+body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Esto quita el scroll lateral, si algo mide más de lo que
+                        mide la pantall, hará que se acomodo para evitar el scroll lateral */
     background-color: var(--fondo-general);
 }
 header{
@@ -17,14 +29,13 @@ header{
     color: var(--color-texto);
     font-family: var(--fuente);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Una línea */
-    /*para que se quede asi hagas scroll:*/
-    position: sticky;
+    position: sticky; /*para que se quede el menu aunque hagas scroll:*/
     top: 0; /*para que se quede arriba*/
     z-index: 1000;/*para que no se vaya atras y venga adelante*/
 }
 nav ul{
     display: flex; /*coloca todo en una linea*/
-    gap: 1rem; /*separa los elementos para q no se vean juntos*/
+    gap: 16px; /*separa los elementos para q no se vean juntos*/
     color: var(--color-texto);
     list-style: none; /*para quitarle los puntos a las listas*/
     font-size: 18px;
@@ -46,12 +57,14 @@ nav a:hover{
 /*PARTE DE LAS TARJETAS*/
 
 #sobre-mi {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 1fr;
+    display: grid; /*esto es lo que divide en cuadriculas tipo youtube*/
+    grid-template-columns: repeat(2, 1fr); /*lo que te dice la primera parte es que
+                                            sea 2 columbas y el 1fr es lo q mide la pantalla 
+                                            cada pantalla medirá la mitad*/
+    grid-auto-rows: 1fr; /*para que la columna tenga la misma altura*/
     gap: 25px; 
-    margin: 60px auto;
-    max-width: 750px; 
+    margin: 60px auto; /*para centrar todo*/
+    max-width: 750px; /*y no se vea feo con pantallas grandes*/
     padding: 20px;
     flex: 3;
     min-width: 350px;
@@ -61,14 +74,11 @@ nav a:hover{
     font-family: var(--fuente);
     padding: 20px;
     border-radius: 12px;
-    display: flex; 
-    flex-direction: column;
-    gap: 8px;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /*para que cuando se pase encima se ilumine y haga como zoom*/
+}           /*0.3== velocidad,  y cubic es de la velocidad que tendra cuando este el raton encima*/
 .tarjeta:hover {
-    transform: translateY(-8px); /*hace que se levante un poco*/
-    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    transform: translateY(-8px); /*hace que se levante un poco (Eje Y= vertical)*/
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25); /*la sombra*/
     background-color: #d1d1d1; /*le da un color mas claro*/
 }
 .tarjeta p, .tarjeta ul, 
@@ -108,8 +118,9 @@ nav a:hover{
     margin: 0 auto; /* Centra la tarjeta */
     padding: 25px;
     border-radius: 15px; 
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    transition: transform 0.3s ease; /* Animación al pasar el ratón */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* sombra */
+    transition: transform 0.3s ease; /* animación al pasar el ratón */
+    /*el ease es como la suavidad*/
 }
 
 /* el ratón por encima */
@@ -140,7 +151,6 @@ nav a:hover{
     border-radius: 15px;   /* Bordes redondos */
     border: 1px solid #ddd;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Una sombra suave */
-    transition: transform 0.3s;
     width: 150px;
 }
 
@@ -151,17 +161,17 @@ nav a:hover{
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 15px;
-    display: inline-block;
+    display: inline-block; /*permite que haya texto o cosas a sus lados o sea en su misma linea*/
 }
 /*CONTACTO*/
 #contacto {
     max-width: 750px;
-    margin: 100px auto; /* Mucho espacio arriba para que destaque */
+    margin: 100px auto; /* Mucho espacio arriba para que se note que es otra seccion */
     padding: 40px 20px;
-    display: flex;
+    display: flex;/*para que este centrado y no se ponga todo a la izquiera*/
+    align-items: center;   /
     flex: 1;
-    flex-direction: column; /* TODO EN COLUMNA */
-    align-items: center;    /* TODO CENTRADO */
+    flex-direction: column; /* para que este en columna o sea uno debajo de otro */
     gap: 30px;              /* Espacio entre el título y los links */
     border-top: 1px solid rgba(255, 255, 255, 0.2); 
     font-family: var(--fuente);
@@ -178,7 +188,7 @@ nav a:hover{
 
 .redes {
     display: flex;
-    flex-direction: column; /* LINKS UNO DEBAJO DE OTRO */
+    flex-direction: column; /*para que aparezca uno debajo de otro */
     align-items: center;    
     gap: 20px;              /* Espacio entre cada link */
 }
@@ -197,24 +207,25 @@ nav a:hover{
     transform: scale(1.1); /* Crece un poquito al pasar el ratón */
 }
 @media (max-width: 768px) {
-    main {
-        flex-direction: column; /* Esto hace que el sidebar pase abajo en el móvil */
-    }
-    
-    #sobre-mi, #proyectos, #contacto {
-        flex: 1;
-        width: 100%; /* Que todos ocupen todo el ancho en el móvil */
-    }
-    
-    /* Tu código del grid que ya tenías... */
-    #sobre-mi {
-        grid-template-columns: 1fr;
-    }
     header {
-        width: 100%;        /* Ocupa todo el ancho */
-        box-sizing: border-box; /* Evita que el padding "estire" el header fuera de la pantalla */
-        padding: 10px 15px; /* Espacio más pequeño para que quepa todo */
-        position: sticky;
-        top: 0;
+        position: sticky !important;     /* Esto hace que siga el menu */
+        top: 0;                 /*Se pega arriba del todo */
+        width: 100% !important; /*Ocupa todo el ancho */
+        left: 0;                /*Se alinea al borde izquierdo */
+        flex-direction: column; 
+        padding: 15px 10px;     /* Quitamos los 50px que lo empujaban fuera */
+        gap: 10px;
+        z-index: 1000;          /*Para que siempre esté por encima de las tarjetas */
+    }
+
+    nav ul {
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;   /*Si hay muchos enlaces, saltan de línea */
+    }
+    #sobre-mi {
+        grid-template-columns: 1fr; 
+        min-width: 0 !important; 
+        width: 100%;
     }
 }
