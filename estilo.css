@@ -169,7 +169,7 @@ nav a:hover{
     margin: 100px auto; /* Mucho espacio arriba para que se note que es otra seccion */
     padding: 40px 20px;
     display: flex;/*para que este centrado y no se ponga todo a la izquiera*/
-    align-items: center;   /
+    align-items: center;  
     flex: 1;
     flex-direction: column; /* para que este en columna o sea uno debajo de otro */
     gap: 30px;              /* Espacio entre el título y los links */
