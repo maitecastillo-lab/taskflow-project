@@ -163,6 +163,150 @@ nav a:hover{
     font-size: 15px;
     display: inline-block; /*permite que haya texto o cosas a sus lados o sea en su misma linea*/
 }
+
+/*RECOMENDACIONES*/
+#recomendaciones {
+    max-width: 750px;
+    margin: 100px auto; 
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    gap: 30px;
+    font-family: var(--fuente);
+}
+
+#recomendaciones h2 {
+    font-size: 35px; 
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin: 0;
+    text-align: center;
+}
+
+#recomendaciones p {
+    color: #cbd5e1;
+    font-size: 18px;
+    margin: 0;
+    text-align: center;
+}
+
+#resenha {
+    background-color: var(--color-tarjetas);
+    padding: 30px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%; /* Para que ocupe el ancho del contenedor */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+#texto {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-family: var(--fuente);
+    font-size: 16px;
+    color: #333;
+    resize: vertical;
+    outline: none;
+}
+
+#boton-publicar {
+    background-color: var(--fondo-menu);
+    color: var(--color-texto);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 18px; /* Un poco más grande para que sea legible */
+    font-weight: bold;
+    cursor: pointer;
+    align-self: center;
+    transition: all 0.3s ease;
+}
+.cotenedor-resenhas {
+    display: flex;
+    gap: 40px; /* espacio entre el formulario y la lista */
+    width: 100%;
+    align-items: flex-start; /* para que el formulario no se estire hacia abajo */
+    margin-top: 20px;
+}
+
+.parte-resenhas {
+    flex: 1; /* Ocupa un espacio base */
+    min-width: 320px;
+}
+
+.parte-publicado {
+    flex: 1.5;
+    width: 100%;
+}
+#listapubli {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    column-count: 2;    /* Divide el espacio en 2 columnas */
+    column-gap: 20px;   /* Espacio entre las columnas */
+    width: 100%;
+}
+
+.resenha-item {
+    background-color: var(--color-tarjetas);
+    padding: 20px;
+    margin-bottom: 20px; /* espacio entre tarjetas de la misma columna */
+    border-radius: 12px;
+    border-left: 6px solid var(--fondo-menu);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    /* esto vita que una tarjeta se corte entre dos columnas */
+    break-inside: avoid; 
+    display: inline-flex; /*para que respete las columnas */
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+.resenha-item:hover {
+    transform: translateX(5px); /* Efecto de movimiento al pasar el ratón */
+}
+.resenha-item span {
+    color: #333;
+    font-size: 15px;
+    line-height: 1.6;
+    flex: 1;
+}
+/*PARA EL BOTON DE ELIMINAR QUE PINTA EL JS*/
+.btn-borrar {
+    background-color: #e95454; 
+    color: white;
+    border: none;
+    padding: 8px 12px;         
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    transition: background-color 0.3s ease, transform 0.2s; /* para que el cambio sea suave */
+}
+
+.btn-borrar:hover {
+    background-color: #c43c3c; 
+    transform: scale(1.05);    /* se agranda un poCO */
+}
+
+#buscador {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 25px; /* Espacio antes de que empiecen las tarjetas */
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-family: var(--fuente);
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
 /*CONTACTO*/
 #contacto {
     max-width: 750px;
@@ -213,9 +357,13 @@ nav a:hover{
         width: 100% !important; /*Ocupa todo el ancho */
         left: 0;                /*Se alinea al borde izquierdo */
         flex-direction: column; 
-        padding: 15px 10px;     /* Quitamos los 50px que lo empujaban fuera */
-        gap: 10px;
-        z-index: 1000;          /*Para que siempre esté por encima de las tarjetas */
+        padding: 10px 5px;    
+        gap: 8px;
+        z-index: 1000;  /*Para que siempre esté por encima de las tarjetas */
+    }
+    body {
+            padding-top: 0;
+            overflow-x: hidden;
     }
 
     nav ul {
@@ -227,5 +375,27 @@ nav a:hover{
         grid-template-columns: 1fr; 
         min-width: 0 !important; 
         width: 100%;
+    }
+    .cotenedor-resenhas {
+        flex-direction: column;
+        gap: 20px;
+        width: 100% !important;
+        padding: 15px !important;
+        margin: 0 !important;
+    }
+    .parte-resenhas, .parte-publicado {
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0;
+    }
+    .resenha-item {
+        flex-direction: column; /* pone el botón debajo del texto si no hay espacio */
+        align-items: flex-start; /* pone todo a la izquierda */
+        padding: 15px;
+    }
+    
+    .btn-borrar {
+        align-self: flex-end; /* se mueve el botón a la esquina inferior derecha */
+        margin-top: 10px;
     }
 }

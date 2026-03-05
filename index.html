@@ -13,6 +13,7 @@
             <ul>
                 <li><a href="#sobre-mi">Sobre mí</a></li>
                 <li><a href="#proyectos">Proyectos</a></li>
+                <li><a href="#recomendaciones">Recomendaciones</a></li>
                 <li><a href="#contacto">Contacto</a></li>
             </ul>
         </nav>
@@ -81,6 +82,28 @@
                 <p>Dificultad: <strong>Media</strong></p>
             </div>
         </section>
+        
+        <!--EN UN FUTURO PODRIA PONER ALGO TIPO CARRUSEL PARA LAS RESEÑAS:)-->
+        <section id="recomendaciones">
+            <h2>Recomendaciones</h2>
+            <p>Feedback de mis compañeros sobre mi desempeño y compañerismo</p>
+        
+            <div class="cotenedor-resenhas">
+
+                <div class="parte-resenhas">
+                    <form id="resenha">
+                        <textarea id="texto" rows="6" placeholder="Escribe aquí tu recomendación"></textarea> <br>
+                        <button type="submit" id="boton-publicar">Publicar</button>
+                    </form>
+                </div>
+    
+                <div class="parte-publicado">
+                    <input type="text" id="buscador" placeholder="Filtrar recomendaciones">
+                    <ul id="listapubli"></ul>
+                </div>
+            </div>
+
+        </section>
         <aside id="contacto">
             <div class="header-contacto">
                 <h2>Contacto</h2>
@@ -92,5 +115,6 @@
             </div>
         </aside>
     </main>
+    <script src="app.js"></script>
 </body>
 </html>
