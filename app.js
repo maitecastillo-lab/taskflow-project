@@ -77,8 +77,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
      });
-<<<<<<< HEAD
 }); 
-=======
-}); 
->>>>>>> eb9af9f3f914cb6d4790c91433819d6903639020
