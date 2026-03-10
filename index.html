@@ -37,7 +37,13 @@
                 La clase dark no está escrita fijamente en el HTML porque se añade dinámicamente con JavaScript. Si la pusiera a mano, la web siempre estaría 
                 en modo oscuro. Mi archivo app.js es el que se encarga de poner html class="scroll-smooth dark" cuando el usuario pulsa el botón" -->
                 <li>
-                    <button id="theme-toggle" class="ml-4 p-2 rounded-full bg-slate-700 hover:bg-slate-600 transition-all border border-white/20">🌓</button>
+                    <button
+                        id="theme-toggle"
+                        type="button"
+                        class="ml-4 p-2 rounded-full bg-slate-700 hover:bg-slate-600 transition-all border border-white/20"
+                        aria-label="Cambiar entre modo claro y modo oscuro"
+                        aria-pressed="false"
+                    >🌓</button>
                 </li>
             </ul>
         </nav>
@@ -46,7 +52,7 @@
     <main class="max-w-[750px] mx-auto px-5">
         <section id="sobre-mi" class="grid grid-cols-1 md:grid-cols-2 gap-[25px] my-[60px]">
             <article class="bg-white dark:bg-slate-800 p-5 rounded-[12px] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_6px_15px_rgba(0,0,0,0.25)] hover:bg-[#d1d1d1] dark:hover:bg-slate-700">
-                <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-indigo-300 border-b border-[#1e293b]/20 mb-[15px] pb-1">Sobre mí</h2>
+                <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-slate-300 border-b border-slate-400 mb-[15px] pb-1">Sobre mí</h2>
                 <p class="text-sm text-[#333] dark:text-slate-200 leading-relaxed">
                     Soy Maite Castillo, estudiante de desarrollo de aplicaciones. 
                     Mi objetivo profesional es incorporarme a una empresa donde pueda
@@ -56,7 +62,7 @@
             </article>
 
             <article class="bg-white dark:bg-slate-800 p-5 rounded-[12px] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_6px_15px_rgba(0,0,0,0.25)] hover:bg-[#d1d1d1] dark:hover:bg-slate-700">
-                <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-indigo-300 border-b border-[#1e293b]/20 mb-[15px] pb-1">Estudios</h2>
+                <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-slate-300 border-b border-slate-400 mb-[15px] pb-1">Estudios</h2>
                 <ul class="text-sm text-[#333] dark:text-slate-200 leading-relaxed space-y-3">
                     <li><strong class="dark:text-white">DAM - Ceac FP</strong> <br>
                          (2º Año)</li>
@@ -68,7 +74,7 @@
             </article>
 
             <article class="bg-white dark:bg-slate-800 p-5 rounded-[12px] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_6px_15px_rgba(0,0,0,0.25)] hover:bg-[#d1d1d1] dark:hover:bg-slate-700">
-                <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-indigo-300 border-b border-[#1e293b]/20 mb-[15px] pb-1">Habilidades</h2>
+                <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-slate-300 border-b border-slate-400 mb-[15px] pb-1">Habilidades</h2>
                 <ul class="text-sm text-[#333] dark:text-slate-200 list-disc list-inside space-y-1">
                     <li>Trabajo en equipo</li>
                     <li>Responsabilidad</li>
@@ -77,7 +83,7 @@
             </article>
 
             <article class="bg-white dark:bg-slate-800 p-5 rounded-[12px] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_6px_15px_rgba(0,0,0,0.25)] hover:bg-[#d1d1d1] dark:hover:bg-slate-700">
-                <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-indigo-300 border-b border-[#1e293b]/20 mb-[15px] pb-1">Herramientas</h2>
+                <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-slate-300 border-b border-slate-400 mb-[15px] pb-1">Herramientas</h2>
                 <ul class="text-sm text-[#333] dark:text-slate-200 list-disc list-inside space-y-1">
                     <li>Java</li>
                     <li>Python</li>
@@ -88,14 +94,25 @@
             </article>
         </section>
 
-        <section id="proyectos" class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-gray-100 dark:bg-slate-900/60 p-[50px_20px] text-center text-[#1e293b] dark:text-white transition-colors duration-500">                <h2 class="text-[30px] dark:text-white uppercase tracking-[2px] mb-[30px] font-bold">Mis Proyectos</h2>
+        <section
+            id="proyectos"
+            class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-gray-100 dark:bg-slate-900/60 p-[50px_20px] text-center text-[#1e293b] dark:text-white transition-colors duration-500"
+        >
+            <h2 class="text-[30px] dark:text-white uppercase tracking-[2px] mb-[30px] font-bold">Mis Proyectos</h2>
             <div class="bg-white dark:bg-slate-800 max-w-[400px] mx-auto p-[25px] rounded-[15px] shadow-lg transition-transform hover:-translate-y-[10px]">
-                <h3 class="text-[25px] text-[#2c3e50] dark:text-indigo-300 mb-2 font-bold">Calculadora Android</h3>
+                <h3 class="text-[25px] text-[#2c3e50] dark:text-slate-300 mb-2 font-bold">Calculadora Android</h3>
                 <div class="flex justify-center my-[15px]">
-                    <img src="Calculadora.png" alt="Calculadora" class="w-[150px] rounded-[15px] border border-gray-200">
+                    <img
+                        src="Calculadora.png"
+                        alt="Captura de pantalla de la aplicación Calculadora Android"
+                        class="w-[150px] rounded-[15px] border border-gray-200"
+                    >
                 </div>
                 <p class="dark:text-slate-300 mb-4">Calculadora con Java en Android Studio</p>
-                <p class="text-sm dark:text-slate-200">Dificultad: <strong class="bg-[#eb8e2a] px-3 py-1 rounded-full text-sm text-[#333]">Media</strong></p>
+                <p class="text-sm dark:text-slate-200">
+                    Dificultad:
+                    <strong class="bg-[#eb8e2a] px-3 py-1 rounded-full text-sm text-[#333]">Media</strong>
+                </p>
             </div>
         </section>
 
@@ -103,11 +120,13 @@
             <h2 class="text-[35px] uppercase tracking-[4px] text-center">Recomendaciones</h2>
             <div class="flex flex-col md:flex-row gap-[40px] w-full items-start">
                 <form id="resenha" class="bg-white dark:bg-slate-800 p-[30px] rounded-[15px] flex flex-col gap-[15px] w-full shadow-lg">
-                    <textarea id="texto" rows="6" class="w-full p-4 border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-lg outline-none text-black dark:text-white focus:ring-2 focus:ring-indigo-400 transition-all duration-300" placeholder="Escribe aquí tu recomendación"></textarea>
-                    <button type="submit" id="boton-publicar" class="bg-[#1e293b] dark:bg-indigo-600 text-white px-8 py-3 rounded-lg font-bold hover:scale-105 active:scale-95 transition-all duration-300 focus:ring-2 focus:ring-indigo-400 self-center">Publicar</button>
+                    <label for="texto" class="text-sm font-semibold text-[#1e293b] dark:text-slate-100">Escribe tu recomendación</label>
+                    <textarea id="texto" rows="6" class="w-full p-4 border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-lg outline-none text-black dark:text-white focus:ring-2 focus:ring-slate-400 transition-all duration-300" placeholder="Escribe aquí tu recomendación"></textarea>
+                    <button type="submit" id="boton-publicar" class="bg-[#1e293b] dark:bg-slate-500 text-white px-8 py-3 rounded-lg font-bold hover:scale-105 active:scale-95 transition-all duration-300 focus:ring-2 focus:ring-slate-400 self-center">Publicar</button>
                 </form>
                 <div class="w-full">
-                    <input type="text" id="buscador" class="w-full p-3 mb-6 border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-lg text-black dark:text-white outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-300 shadow-sm" placeholder="Filtrar recomendaciones">
+                    <label for="buscador" class="sr-only">Filtrar recomendaciones por texto</label>
+                    <input type="text" id="buscador" class="w-full p-3 mb-6 border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-lg text-black dark:text-white outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-300 transition-all duración-300 shadow-sm" placeholder="Filtrar recomendaciones">
                     <ul id="listapubli" class="md:[column-count:2] [column-gap:20px] w-full list-none p-0 m-0"></ul>
                 </div>
             </div>

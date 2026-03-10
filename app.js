@@ -6,9 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const lista = document.getElementById('listapubli');
     const themeBtn = document.getElementById('theme-toggle');
 
-    /*Alternar Modo Oscuro en el elemento raíz */
+    /* Estado inicial accesible del botón de tema */
+    themeBtn.setAttribute('aria-pressed', document.documentElement.classList.contains('dark'));
+
+    /*Alternar Modo Oscuro en el elemento raíz y actualizar aria-pressed */
     themeBtn.addEventListener('click', () => {
-        document.documentElement.classList.toggle('dark');
+        const isDark = document.documentElement.classList.toggle('dark');
+        themeBtn.setAttribute('aria-pressed', isDark);
     });
 
      /* Creamos el array para que guarde todo */
@@ -30,17 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* 2. Sustitución de CSS por clases de utilidad de Tailwind */
-    function pintarTarjetas(){
-        lista.innerHTML = ''; 
+    // Renderiza las reseñas almacenadas en la lista usando destructuring
+    function pintarTarjetas() {
+        lista.innerHTML = '';
         misResenhas.forEach((frase, posicion) => {
+            const [texto, idx] = [frase, posicion];
             const li = document.createElement('li');
-
-         // Uso de dark: y coherencia visual con escala de Tailwind
-            li.className = 'resenha-item bg-white dark:bg-slate-800 p-5 mb-5 rounded-[12px] border-l-[6px] border-l-[#1e293b] shadow-md flex justify-between items-center break-inside-avoid w-full transition-transform hover:translate-x-1';
-
+            li.className = 'resenha-item bg-white dark:bg-slate-800 p-5 mb-5 rounded-[12px] border-l-[6px] border-l-slate-400 shadow-md flex justify-between items-center break-inside-avoid w-full transición-transform hover:translate-x-1';
             li.innerHTML = `
-                <span class="text-[#333] dark:text-gray-100 text-[15px] leading-relaxed pr-4 font-medium">${frase}</span>
-                <button class="bg-[#f05454] text-white px-3 py-1.5 rounded-lg font-bold text-sm hover:bg-[#d94444] transition-all hover:scale-105 active:scale-95 shadow-sm" onclick="borrarResenha(${posicion})">Eliminar</button>`;
+                <span class="text-[#333] dark:text-gray-100 text-[15px] leading-relaxed pr-4 font-medium">${texto}</span>
+                <button class="bg-slate-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm hover:bg-slate-600 transition-all hover:scale-105 active:scale-95 shadow-sm" onclick="borrarResenha(${idx})">Eliminar</button>`;
             lista.appendChild(li);
         });
     }
