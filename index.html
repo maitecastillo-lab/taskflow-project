@@ -7,6 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            //aqui agregue que solo se active dark cuando yo presione el boton que es para cambiar
+            //esto lo consegui con ponr que solo se active cuando la clase este en on q es cuando el 
+            //usuario lo presione y el java lo active.
             darkMode: 'class',
             theme: {
                 extend: {
@@ -28,6 +31,11 @@
                 <li><a href="#proyectos" class="hover:text-white hover:drop-shadow-[0_0_10px_white] transition-all">Proyectos</a></li>
                 <li><a href="#recomendaciones" class="hover:text-white hover:drop-shadow-[0_0_10px_white] transition-all">Recomendaciones</a></li>
                 <li><a href="#contacto" class="hover:text-white hover:drop-shadow-[0_0_10px_white] transition-all">Contacto</a></li>
+                <!--Creé un botón con el ID theme-toggle. Mediante un EventListener en JavaScript, este botón añade o quita la clase .dark de la etiqueta raíz
+                 html. Como Tailwind está configurado en modo 'class', detecta ese cambio y aplica los estilos correspondientes.
+
+                La clase dark no está escrita fijamente en el HTML porque se añade dinámicamente con JavaScript. Si la pusiera a mano, la web siempre estaría 
+                en modo oscuro. Mi archivo app.js es el que se encarga de poner html class="scroll-smooth dark" cuando el usuario pulsa el botón" -->
                 <li>
                     <button id="theme-toggle" class="ml-4 p-2 rounded-full bg-slate-700 hover:bg-slate-600 transition-all border border-white/20">🌓</button>
                 </li>
