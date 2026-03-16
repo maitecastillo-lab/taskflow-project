@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
      *
      * Soporta:
      * - reseñas antiguas guardadas como string (solo texto)
-     * - reseñas modernas como objeto `{ texto, tipo, rating, fecha }`
+     * - reseñas modernas como objeto `{ texto, tipo, rating, fecha, leido }`
      *
      * Reglas:
      * - `tipo` por defecto: "Personal"
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * - `fecha`: si no existe o es inválida, se rellena con la fecha de hoy (DD/MM/AAAA)
      *
      * @param {unknown} item
-     * @returns {{texto: string, tipo: string, rating: number, fecha: string}}
+     * @returns {{texto: string, tipo: string, rating: number, fecha: string, leido: boolean}}
      */
     function normalizarResenha(item) {
         const base = {
@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tipo: 'Personal',
             rating: 5,
             fecha: fechaHoyFormateada(),
+            leido: false,
         };
 
         if (typeof item === 'string') {
@@ -80,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (item && typeof item === 'object') {
+            const leido = typeof item.leido === 'boolean' ? item.leido : base.leido;
             return {
                 ...base,
                 ...item,
@@ -87,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fecha: typeof item.fecha === 'string' && item.fecha.trim()
                     ? item.fecha
                     : base.fecha,
+                leido,
             };
         }
 
@@ -259,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const fragment = document.createDocumentFragment();
         misResenhas.forEach((resenha, idx) => {
-            const { texto, tipo, rating, fecha } = resenha;
+            const { texto, tipo, rating, fecha, leido } = resenha;
 
             const node = resenhaTemplate.content.firstElementChild.cloneNode(true);
             node.className = `${LI_BASE_CLASS} resenha-item flex`;
@@ -269,6 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const fechaEl = node.querySelector('[data-role="fecha"]');
             const textoEl = node.querySelector('[data-role="texto"]');
             const eliminarBtn = node.querySelector('[data-role="eliminar"]');
+            const leidoCheckbox = node.querySelector('[data-role="leido"]');
 
             tipoEl.className = `inline-flex items-center px-2 py-0.5 rounded-full ${claseParaTipo(tipo)}`;
             tipoEl.textContent = tipo;
@@ -287,6 +291,12 @@ document.addEventListener('DOMContentLoaded', () => {
             eliminarBtn.dataset.idx = String(idx);
             eliminarBtn.setAttribute('aria-label', labelEliminarParaResenha({ texto, tipo, rating }));
 
+            if (leidoCheckbox) {
+                leidoCheckbox.dataset.idx = String(idx);
+                leidoCheckbox.checked = Boolean(leido);
+                leidoCheckbox.setAttribute('aria-label', leidoCheckbox.checked ? 'Marcar como no leído' : 'Marcar como leído');
+            }
+
             fragment.appendChild(node);
         });
         lista.appendChild(fragment);
@@ -300,6 +310,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     const idx = Number(btn.getAttribute('data-idx'));
                     borrarResenha(idx);
                 }
+            });
+            lista.addEventListener('change', function (e) {
+                const checkbox = e.target.closest('input[type="checkbox"][data-idx]');
+                if (!checkbox) return;
+                const idx = Number(checkbox.getAttribute('data-idx'));
+                if (!Number.isFinite(idx) || !misResenhas[idx]) return;
+                misResenhas[idx].leido = checkbox.checked;
+                guardarYActualizar();
             });
             lista._eventsDelegated = true;
         }
@@ -319,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        misResenhas.push({ texto: mensaje, tipo, rating, fecha: fechaHoyFormateada() });
+        misResenhas.push({ texto: mensaje, tipo, rating, fecha: fechaHoyFormateada(), leido: false });
         resetFormularioResenha();
         guardarYActualizar();
     });
