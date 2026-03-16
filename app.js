@@ -17,6 +17,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeBtn = document.getElementById('theme-toggle');
     const totalResenhasEl = document.getElementById('resenhas-total');
 
+    // Flip 3D de tarjetas "Sobre mí" también en móvil (tap)
+    const sobreMi = document.getElementById('sobre-mi');
+    if (sobreMi && !sobreMi._flipDelegated) {
+        sobreMi.addEventListener('click', (e) => {
+            const card = e.target.closest('article.group');
+            if (!card) return;
+            card.classList.toggle('is-flipped');
+        });
+        sobreMi._flipDelegated = true;
+    }
+
     function normalizarResenha(item) {
         if (typeof item === 'string') return { texto: item, tipo: 'Personal', rating: 5 };
         if (item && typeof item === 'object') {
