@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const lista = document.getElementById('listapubli');
     const resenhaTemplate = document.getElementById('resenha-template');
     const themeBtn = document.getElementById('theme-toggle');
+    const totalResenhasEl = document.getElementById('resenhas-total');
 
     function normalizarResenha(item) {
         if (typeof item === 'string') return { texto: item, tipo: 'Personal', rating: 5 };
@@ -118,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function pintarTarjetas() {
         lista.innerHTML = '';
+        if (totalResenhasEl) totalResenhasEl.textContent = String(misResenhas.length);
         if (misResenhas.length === 0) {
             lista.style.columnCount = 1;
             lista.innerHTML = `<li class="col-span-full w-full text-center text-gray-400 py-8 text-lg font-medium flex flex-col items-center gap-3">
