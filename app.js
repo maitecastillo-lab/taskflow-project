@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     const STORAGE_KEY = 'mis_resenhas';
-    const TIPO_CLASES = {
+    const TIPO_CLASES = Object.freeze({
         Personal: 'bg-slate-500 text-white',
         Académica: 'bg-slate-400 text-slate-900',
         Profesional: 'bg-slate-600 text-white',
-    };
+    });
     const LI_BASE_CLASS = 'resenha-item bg-white dark:bg-slate-800 p-5 mb-5 rounded-[12px] border-l-[6px] border-l-slate-400 shadow-md flex justify-between items-center break-inside-avoid w-full transition-transform hover:translate-x-1';
 
     const form = document.getElementById('resenha');
@@ -17,7 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeBtn = document.getElementById('theme-toggle');
     const totalResenhasEl = document.getElementById('resenhas-total');
 
-    // Flip 3D de tarjetas "Sobre mí" también en móvil (tap)
+    /**
+     * Habilita el "tilt 3D" de la sección "Sobre mí" también en móvil.
+     *
+     * Diseño:
+     * - En desktop el efecto se activa con `group-hover:*` (CSS/Tailwind).
+     * - En móvil no existe hover real; al tocar una tarjeta alternamos la clase `is-flipped`.
+     *
+     * Nota: usamos una marca interna (`_flipDelegated`) para evitar registrar el listener más de una vez.
+     */
     const sobreMi = document.getElementById('sobre-mi');
     if (sobreMi && !sobreMi._flipDelegated) {
         sobreMi.addEventListener('click', (e) => {
@@ -28,6 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
         sobreMi._flipDelegated = true;
     }
 
+    /**
+     * Devuelve la fecha de hoy en formato `DD/MM/AAAA`.
+     *
+     * Se usa para asignar fecha a nuevas reseñas y para migrar reseñas antiguas
+     * que no tengan `fecha` en LocalStorage.
+     *
+     * @returns {string} Fecha formateada.
+     */
     function fechaHoyFormateada() {
         const hoy = new Date();
         const dd = String(hoy.getDate()).padStart(2, '0');
@@ -36,36 +52,91 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${dd}/${mm}/${yyyy}`;
     }
 
+    /**
+     * Normaliza una reseña para garantizar estructura estable en UI/LocalStorage.
+     *
+     * Soporta:
+     * - reseñas antiguas guardadas como string (solo texto)
+     * - reseñas modernas como objeto `{ texto, tipo, rating, fecha }`
+     *
+     * Reglas:
+     * - `tipo` por defecto: "Personal"
+     * - `rating` por defecto: 5 (y debe ser número)
+     * - `fecha`: si no existe o es inválida, se rellena con la fecha de hoy (DD/MM/AAAA)
+     *
+     * @param {unknown} item
+     * @returns {{texto: string, tipo: string, rating: number, fecha: string}}
+     */
     function normalizarResenha(item) {
+        const base = {
+            texto: '',
+            tipo: 'Personal',
+            rating: 5,
+            fecha: fechaHoyFormateada(),
+        };
+
         if (typeof item === 'string') {
-            return { texto: item, tipo: 'Personal', rating: 5, fecha: fechaHoyFormateada() };
+            return { ...base, texto: item };
         }
+
         if (item && typeof item === 'object') {
             return {
-                texto: item.texto ?? '',
-                tipo: item.tipo ?? 'Personal',
-                rating: typeof item.rating === 'number' ? item.rating : 5,
-                fecha: item.fecha || fechaHoyFormateada(),
+                ...base,
+                ...item,
+                rating: typeof item.rating === 'number' ? item.rating : base.rating,
+                fecha: typeof item.fecha === 'string' && item.fecha.trim()
+                    ? item.fecha
+                    : base.fecha,
             };
         }
-        return { texto: String(item), tipo: 'Personal', rating: 5, fecha: fechaHoyFormateada() };
+
+        return { ...base, texto: String(item) };
     }
 
+    /**
+     * Devuelve las clases Tailwind para el "badge" de tipo.
+     *
+     * @param {string} tipo
+     * @returns {string}
+     */
     function claseParaTipo(tipo) {
         return TIPO_CLASES[tipo] ?? TIPO_CLASES.Personal;
     }
 
+    /**
+     * Convierte un rating numérico (1..5) en estrellas "★★★★★☆☆☆☆☆".
+     *
+     * @param {number} rating
+     * @returns {string}
+     */
     function estrellasParaRating(rating) {
         const n = Math.max(1, Math.min(5, rating || 5));
         return '★'.repeat(n) + '☆'.repeat(5 - n);
     }
 
+    /**
+     * Genera una etiqueta accesible para el botón "Eliminar" (screen readers).
+     *
+     * @param {{texto: string, tipo: string, rating: number}} params
+     * @returns {string}
+     */
     function labelEliminarParaResenha({ texto, tipo, rating }) {
         const snippet = String(texto || '').trim().slice(0, 40);
         const sufijo = snippet.length === 40 ? '…' : '';
         return `Eliminar reseña (${tipo}, ${rating} de 5): ${snippet}${sufijo}`;
     }
 
+    /**
+     * Muestra un "toast" (notificación no intrusiva) en la esquina superior derecha.
+     *
+     * Detalles:
+     * - Crea el contenedor una sola vez (`#toast-container`) y reutiliza.
+     * - Es accesible: `role="status"` + `aria-live="polite"`.
+     * - Se auto-destruye tras `durationMs` y limpia el contenedor si queda vacío.
+     *
+     * @param {{accion: string, mensaje: string, durationMs?: number}} params
+     * @returns {void}
+     */
     function mostrarAviso({ accion, mensaje, durationMs = 5000 }) {
         let container = document.getElementById('toast-container');
         if (!container) {
@@ -89,22 +160,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }, durationMs);
     }
 
+    /**
+     * Resetea el formulario a sus valores iniciales.
+     *
+     * @returns {void}
+     */
     function resetFormularioResenha() {
         input.value = '';
         tipoSelect.value = 'Personal';
         ratingSelect.value = '5';
     }
 
+    /**
+     * Sanea mínimos caracteres peligrosos para evitar inyección de HTML.
+     *
+     * Nota: además de esto, la UI usa `textContent` (no `innerHTML`) para imprimir
+     * texto de usuario, así que es una defensa extra.
+     *
+     * @param {unknown} texto
+     * @returns {string}
+     */
     function limpiarTexto(texto) {
         return String(texto).replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
+    /**
+     * Normaliza el mensaje para mostrarlo de forma consistente.
+     * - recorta espacios
+     * - colapsa espacios repetidos
+     * - pone la primera letra en mayúscula
+     *
+     * @param {unknown} texto
+     * @returns {string}
+     */
     function normalizarMensaje(texto) {
         const limpio = String(texto).trim().replace(/\s+/g, ' ').toLowerCase();
         if (!limpio) return '';
         return limpio.charAt(0).toUpperCase() + limpio.slice(1);
     }
 
+    /**
+     * Evita publicar duplicados exactos (texto + tipo + rating).
+     *
+     * @param {string} texto
+     * @param {string} tipo
+     * @param {number} rating
+     * @returns {boolean}
+     */
     function esResenhaRepetida(texto, tipo, rating) {
         return misResenhas.some(
             (r) => r.texto === texto && r.tipo === tipo && r.rating === rating
@@ -119,25 +221,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let misResenhas = (JSON.parse(localStorage.getItem(STORAGE_KEY)) || []).map(normalizarResenha);
 
+    /**
+     * Persistencia única del estado:
+     * - guarda `misResenhas` en LocalStorage (una sola clave)
+     * - repinta la lista para mantener UI y estado sincronizados (contador incluido)
+     *
+     * @returns {void}
+     */
     function guardarYActualizar() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(misResenhas));
         pintarTarjetas();
     }
 
     /**
-     * pinta las reseñas en el contenedor `lista` de forma eficiente y segura.
-     * 
-     * Problemas de rendimiento de la versión original:
-     * 1. Usa `lista.innerHTML = ''` y luego inserta los elementos **uno a uno** con `appendChild`, lo que causa múltiples repaints y reflows del DOM.
-     * 2. Dentro del ciclo forEach, para cada reseña crea elementos y modifica el DOM individualmente.
-     * 3. Usa `innerHTML` para todos los nodos, lo cual puede exponer a vulnerabilidades XSS si los datos no están sanizados y es más lento que la inserción masiva controlada.
-     * 
-     * Pasos para una versión más eficiente:
-     * 1. Construir todo el HTML en memoria (usando array y join) en vez de manipular el DOM en cada ciclo.
-     * 2. Usar un solo reemplazo de `innerHTML` al final, reduciendo repaints y reflows.
-     * 3. Sanear siempre el texto del usuario antes de imprimirlo.
-     * 
-     * Nota: Si se requieren elementos dinámicos (como botones con manejadores), es mejor usar delegación de eventos.
+     * Renderiza el listado de reseñas de forma eficiente.
+     *
+     * Responsabilidades:
+     * - Vacía el contenedor y actualiza el contador.
+     * - Muestra estado vacío cuando no hay reseñas.
+     * - Pinta tarjetas desde el `template` en un `DocumentFragment` (menos reflows).
+     * - Registra (una sola vez) un listener delegado para "Eliminar".
+     *
+     * @returns {void}
      */
     function pintarTarjetas() {
         lista.innerHTML = '';
@@ -172,8 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
             estrellasEl.setAttribute('aria-label', `Puntuación ${rating} de 5`);
 
             if (fechaEl) {
-                fechaEl.textContent = fecha || fechaHoyFormateada();
-                fechaEl.setAttribute('aria-label', `Fecha de publicación: ${fecha || fechaHoyFormateada()}`);
+                fechaEl.textContent = fecha;
+                fechaEl.setAttribute('aria-label', `Fecha de publicación: ${fecha}`);
             }
 
             // Seguridad: nunca insertamos el texto del usuario con innerHTML
@@ -219,6 +324,15 @@ document.addEventListener('DOMContentLoaded', () => {
         guardarYActualizar();
     });
 
+    /**
+     * Elimina una reseña por índice y sincroniza persistencia + UI.
+     *
+     * Nota: se expone en `window` para que sea accesible desde la delegación del click
+     * (y porque el proyecto ya venía con ese patrón).
+     *
+     * @param {number} indice
+     * @returns {void}
+     */
     window.borrarResenha = (indice) => {
         misResenhas.splice(indice, 1);
         guardarYActualizar();
