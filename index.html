@@ -7,6 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            //aqui agregue que solo se active dark cuando yo presione el boton que es para cambiar
+            //esto lo consegui con ponr que solo se active cuando la clase este en on q es cuando el 
+            //usuario lo presione y el java lo active.
             darkMode: 'class',
             theme: {
                 extend: {
@@ -28,78 +31,160 @@
                 <li><a href="#proyectos" class="hover:text-white hover:drop-shadow-[0_0_10px_white] transition-all">Proyectos</a></li>
                 <li><a href="#recomendaciones" class="hover:text-white hover:drop-shadow-[0_0_10px_white] transition-all">Recomendaciones</a></li>
                 <li><a href="#contacto" class="hover:text-white hover:drop-shadow-[0_0_10px_white] transition-all">Contacto</a></li>
+                <!--Creé un botón con el ID theme-toggle. Mediante un EventListener en JavaScript, este botón añade o quita la clase .dark de la etiqueta raíz
+                 html. Como Tailwind está configurado en modo 'class', detecta ese cambio y aplica los estilos correspondientes.
+
+                La clase dark no está escrita fijamente en el HTML porque se añade dinámicamente con JavaScript. Si la pusiera a mano, la web siempre estaría 
+                en modo oscuro. Mi archivo app.js es el que se encarga de poner html class="scroll-smooth dark" cuando el usuario pulsa el botón" -->
                 <li>
-                    <button id="theme-toggle" class="ml-4 p-2 rounded-full bg-slate-700 hover:bg-slate-600 transition-all border border-white/20">🌓</button>
+                    <button
+                        id="theme-toggle"
+                        type="button"
+                        class="ml-4 p-2 rounded-full bg-slate-700 hover:bg-slate-600 transition-all border border-white/20"
+                        aria-label="Cambiar entre modo claro y modo oscuro"
+                        aria-pressed="false"
+                    >🌓</button>
                 </li>
             </ul>
         </nav>
     </header>
 
-    <main class="max-w-[750px] mx-auto px-5">
+    <main class="max-w-[1000px] mx-auto px-5">
         <section id="sobre-mi" class="grid grid-cols-1 md:grid-cols-2 gap-[25px] my-[60px]">
-            <article class="bg-white dark:bg-slate-800 p-5 rounded-[12px] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_6px_15px_rgba(0,0,0,0.25)] hover:bg-[#d1d1d1] dark:hover:bg-slate-700">
-                <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-indigo-300 border-b border-[#1e293b]/20 mb-[15px] pb-1">Sobre mí</h2>
-                <p class="text-sm text-[#333] dark:text-slate-200 leading-relaxed">
-                    Soy Maite Castillo, estudiante de desarrollo de aplicaciones. 
-                    Mi objetivo profesional es incorporarme a una empresa donde pueda
-                    aplicar mis conocimientos en desarrollo, seguir aprendiendo nuevas
-                    tecnologías y crecer tanto a nivel personal como profesional.
-                </p>
+            <article class="group bg-white dark:bg-slate-800 p-5 rounded-[12px] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_6px_15px_rgba(0,0,0,0.25)] hover:bg-[#d1d1d1] dark:hover:bg-slate-700 [perspective:1000px]">
+                <div class="[transform-style:preserve-3d] [will-change:transform] transition-transform duration-500 ease-out motion-reduce:transition-none motion-reduce:[transform:none] group-hover:[transform:rotateY(-6deg)_rotateX(2deg)] group-[.is-flipped]:[transform:rotateY(-8deg)_rotateX(3deg)]">
+                    <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-slate-300 border-b border-slate-400 mb-[15px] pb-1">Sobre mí</h2>
+                    <p class="text-sm text-[#333] dark:text-slate-200 leading-relaxed">
+                        Soy Maite Castillo, estudiante de desarrollo de aplicaciones. 
+                        Mi objetivo profesional es incorporarme a una empresa donde pueda
+                        aplicar mis conocimientos en desarrollo, seguir aprendiendo nuevas
+                        tecnologías y crecer tanto a nivel personal como profesional.
+                    </p>
+                </div>
             </article>
 
-            <article class="bg-white dark:bg-slate-800 p-5 rounded-[12px] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_6px_15px_rgba(0,0,0,0.25)] hover:bg-[#d1d1d1] dark:hover:bg-slate-700">
-                <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-indigo-300 border-b border-[#1e293b]/20 mb-[15px] pb-1">Estudios</h2>
-                <ul class="text-sm text-[#333] dark:text-slate-200 leading-relaxed space-y-3">
-                    <li><strong class="dark:text-white">DAM - Ceac FP</strong> <br>
-                         (2º Año)</li>
-                    <li><strong class="dark:text-white">DAM - Euroformac</strong> <br>
-                        (1º Año)</li>
-                    <li><strong class="dark:text-white">Certificación Python</strong><br>
-                         Santander</li>
-                </ul>
+            <article class="group bg-white dark:bg-slate-800 p-5 rounded-[12px] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_6px_15px_rgba(0,0,0,0.25)] hover:bg-[#d1d1d1] dark:hover:bg-slate-700 [perspective:1000px]">
+                <div class="[transform-style:preserve-3d] [will-change:transform] transition-transform duration-500 ease-out motion-reduce:transition-none motion-reduce:[transform:none] group-hover:[transform:rotateY(-6deg)_rotateX(2deg)] group-[.is-flipped]:[transform:rotateY(-8deg)_rotateX(3deg)]">
+                    <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-slate-300 border-b border-slate-400 mb-[15px] pb-1">Estudios</h2>
+                    <ul class="text-sm text-[#333] dark:text-slate-200 leading-relaxed space-y-3">
+                        <li><strong class="dark:text-white">DAM - Ceac FP</strong> <br>
+                             (2º Año)</li>
+                        <li><strong class="dark:text-white">DAM - Euroformac</strong> <br>
+                            (1º Año)</li>
+                        <li><strong class="dark:text-white">Certificación Python</strong><br>
+                             Santander</li>
+                    </ul>
+                </div>
             </article>
 
-            <article class="bg-white dark:bg-slate-800 p-5 rounded-[12px] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_6px_15px_rgba(0,0,0,0.25)] hover:bg-[#d1d1d1] dark:hover:bg-slate-700">
-                <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-indigo-300 border-b border-[#1e293b]/20 mb-[15px] pb-1">Habilidades</h2>
-                <ul class="text-sm text-[#333] dark:text-slate-200 list-disc list-inside space-y-1">
-                    <li>Trabajo en equipo</li>
-                    <li>Responsabilidad</li>
-                    <li>Puntualidad</li>
-                </ul>
+            <article class="group bg-white dark:bg-slate-800 p-5 rounded-[12px] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_6px_15px_rgba(0,0,0,0.25)] hover:bg-[#d1d1d1] dark:hover:bg-slate-700 [perspective:1000px]">
+                <div class="[transform-style:preserve-3d] [will-change:transform] transition-transform duration-500 ease-out motion-reduce:transition-none motion-reduce:[transform:none] group-hover:[transform:rotateY(-6deg)_rotateX(2deg)] group-[.is-flipped]:[transform:rotateY(-8deg)_rotateX(3deg)]">
+                    <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-slate-300 border-b border-slate-400 mb-[15px] pb-1">Habilidades</h2>
+                    <ul class="text-sm text-[#333] dark:text-slate-200 list-disc list-inside space-y-1">
+                        <li>Trabajo en equipo</li>
+                        <li>Responsabilidad</li>
+                        <li>Puntualidad</li>
+                    </ul>
+                </div>
             </article>
 
-            <article class="bg-white dark:bg-slate-800 p-5 rounded-[12px] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_6px_15px_rgba(0,0,0,0.25)] hover:bg-[#d1d1d1] dark:hover:bg-slate-700">
-                <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-indigo-300 border-b border-[#1e293b]/20 mb-[15px] pb-1">Herramientas</h2>
-                <ul class="text-sm text-[#333] dark:text-slate-200 list-disc list-inside space-y-1">
-                    <li>Java</li>
-                    <li>Python</li>
-                    <li>SQL</li>
-                    <li>HTML / CSS</li>
-                    <li>Mircrosoft Office 360</li>
-                </ul>
+            <article class="group bg-white dark:bg-slate-800 p-5 rounded-[12px] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_6px_15px_rgba(0,0,0,0.25)] hover:bg-[#d1d1d1] dark:hover:bg-slate-700 [perspective:1000px]">
+                <div class="[transform-style:preserve-3d] [will-change:transform] transition-transform duration-500 ease-out motion-reduce:transition-none motion-reduce:[transform:none] group-hover:[transform:rotateY(-6deg)_rotateX(2deg)] group-[.is-flipped]:[transform:rotateY(-8deg)_rotateX(3deg)]">
+                    <h2 class="text-[1.4rem] font-bold text-[#1e293b] dark:text-slate-300 border-b border-slate-400 mb-[15px] pb-1">Herramientas</h2>
+                    <ul class="text-sm text-[#333] dark:text-slate-200 list-disc list-inside space-y-1">
+                        <li>Java</li>
+                        <li>Python</li>
+                        <li>SQL</li>
+                        <li>HTML / CSS</li>
+                        <li>Mircrosoft Office 360</li>
+                    </ul>
+                </div>
             </article>
         </section>
 
-        <section id="proyectos" class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-gray-100 dark:bg-slate-900/60 p-[50px_20px] text-center text-[#1e293b] dark:text-white transition-colors duration-500">                <h2 class="text-[30px] dark:text-white uppercase tracking-[2px] mb-[30px] font-bold">Mis Proyectos</h2>
+        <section
+            id="proyectos"
+            class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-gray-100 dark:bg-slate-900/60 p-[50px_20px] text-center text-[#1e293b] dark:text-white transition-colors duration-500"
+        >
+            <h2 class="text-[30px] dark:text-white uppercase tracking-[2px] mb-[30px] font-bold">Mis Proyectos</h2>
             <div class="bg-white dark:bg-slate-800 max-w-[400px] mx-auto p-[25px] rounded-[15px] shadow-lg transition-transform hover:-translate-y-[10px]">
-                <h3 class="text-[25px] text-[#2c3e50] dark:text-indigo-300 mb-2 font-bold">Calculadora Android</h3>
+                <h3 class="text-[25px] text-[#2c3e50] dark:text-slate-300 mb-2 font-bold">Calculadora Android</h3>
                 <div class="flex justify-center my-[15px]">
-                    <img src="Calculadora.png" alt="Calculadora" class="w-[150px] rounded-[15px] border border-gray-200">
+                    <img
+                        src="Calculadora.png"
+                        alt="Captura de pantalla de la aplicación Calculadora Android"
+                        class="w-[150px] rounded-[15px] border border-gray-200"
+                    >
                 </div>
                 <p class="dark:text-slate-300 mb-4">Calculadora con Java en Android Studio</p>
-                <p class="text-sm dark:text-slate-200">Dificultad: <strong class="bg-[#eb8e2a] px-3 py-1 rounded-full text-sm text-[#333]">Media</strong></p>
+                <p class="text-sm dark:text-slate-200">
+                    Dificultad:
+                    <strong class="bg-[#eb8e2a] px-3 py-1 rounded-full text-sm text-[#333]">Media</strong>
+                </p>
             </div>
         </section>
 
         <section id="recomendaciones" class="my-[100px] flex flex-col items-center gap-[30px]">
             <h2 class="text-[35px] uppercase tracking-[4px] text-center">Recomendaciones</h2>
             <div class="flex flex-col md:flex-row gap-[40px] w-full items-start">
-                <form id="resenha" class="bg-white dark:bg-slate-800 p-[30px] rounded-[15px] flex flex-col gap-[15px] w-full shadow-lg">
-                    <textarea id="texto" rows="6" class="w-full p-4 border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-lg outline-none text-black dark:text-white focus:ring-2 focus:ring-indigo-400 transition-all duration-300" placeholder="Escribe aquí tu recomendación"></textarea>
-                    <button type="submit" id="boton-publicar" class="bg-[#1e293b] dark:bg-indigo-600 text-white px-8 py-3 rounded-lg font-bold hover:scale-105 active:scale-95 transition-all duration-300 focus:ring-2 focus:ring-indigo-400 self-center">Publicar</button>
+                <form id="resenha" class="bg-white dark:bg-slate-800 p-[30px] rounded-[15px] flex flex-col gap-[15px] w-full md:w-[40%] shadow-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-1">
+                            <label for="tipo-resenha" class="text-sm font-semibold text-[#1e293b] dark:text-slate-100">Tipo de reseña</label>
+                            <select id="tipo-resenha" class="w-full p-3 border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-lg text-black dark:text-white outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-300 transition-all duration-300">
+                                <option value="Personal">Personal</option>
+                                <option value="Académica">Académica</option>
+                                <option value="Profesional">Profesional</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label for="rating" class="text-sm font-semibold text-[#1e293b] dark:text-slate-100">Puntuación (1-5 estrellas)</label>
+                            <select id="rating" class="w-full p-3 border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-lg text-black dark:text-white outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-300 transition-all duration-300">
+                                <option value="5">★★★★★ (5)</option>
+                                <option value="4">★★★★☆ (4)</option>
+                                <option value="3">★★★☆☆ (3)</option>
+                                <option value="2">★★☆☆☆ (2)</option>
+                                <option value="1">★☆☆☆☆ (1)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label for="texto" class="text-sm font-semibold text-[#1e293b] dark:text-slate-100">Escribe tu recomendación</label>
+                    <textarea id="texto" rows="6" class="w-full md:w-[95%] lg:w-full p-4 border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-lg outline-none text-black dark:text-white focus:ring-2 focus:ring-slate-400 transition-all duration-300" placeholder="Escribe aquí tu recomendación"></textarea>
+
+                    <button type="submit" id="boton-publicar" class="bg-[#1e293b] dark:bg-slate-500 text-white px-8 py-3 rounded-lg font-bold hover:scale-105 active:scale-95 transition-all duración-300 focus:ring-2 focus:ring-slate-400 self-center">Publicar</button>
                 </form>
-                <div class="w-full">
-                    <input type="text" id="buscador" class="w-full p-3 mb-6 border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-lg text-black dark:text-white outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-300 shadow-sm" placeholder="Filtrar recomendaciones">
+                <div class="w-full md:w-[60%]">
+                    <label for="buscador" class="sr-only">Filtrar recomendaciones por texto</label>
+                    <input type="text" id="buscador" class="w-full p-3 mb-6 border-2 border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-lg text-black dark:text-white outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-300 transition-all duración-300 shadow-sm" placeholder="Filtrar recomendaciones">
+
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                            Total de reseñas:
+                            <span id="resenhas-total" class="ml-1 inline-flex items-center rounded-full bg-slate-200 text-slate-900 px-2.5 py-0.5 text-xs font-bold dark:bg-slate-700 dark:text-slate-100">0</span>
+                        </p>
+                    </div>
+                    <template id="resenha-template">
+                        <li class="resenha-item">
+                            <div class="flex flex-col gap-2 pr-4 max-w-[80%]">
+                                <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] uppercase tracking-wide font-semibold">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span data-role="tipo" class="inline-flex items-center px-2 py-0.5 rounded-full"></span>
+                                        <span data-role="estrellas" class="text-yellow-400 dark:text-yellow-300 select-none"></span>
+                                    </div>
+                                    <span data-role="fecha" class="text-[10px] font-normal text-slate-500 dark:text-slate-400">
+                                        01/01/2025
+                                    </span>
+                                </div>
+                                <span data-role="texto" class="text-[#333] dark:text-gray-100 text-[15px] leading-relaxed font-medium break-words"></span>
+                                <label class="mt-1 inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 select-none cursor-pointer">
+                                    <input data-role="leido" type="checkbox" aria-label="Marcar recomendación como leída" class="h-4 w-4 accent-slate-800 dark:accent-white" />
+                                    <span>Leído</span>
+                                </label>
+                            </div>
+                            <button data-role="eliminar" type="button" class="bg-slate-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm hover:bg-slate-600 transition-all hover:scale-105 active:scale-95 shadow-sm">Eliminar</button>
+                        </li>
+                    </template>
                     <ul id="listapubli" class="md:[column-count:2] [column-gap:20px] w-full list-none p-0 m-0"></ul>
                 </div>
             </div>
