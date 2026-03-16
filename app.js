@@ -28,16 +28,27 @@ document.addEventListener('DOMContentLoaded', () => {
         sobreMi._flipDelegated = true;
     }
 
+    function fechaHoyFormateada() {
+        const hoy = new Date();
+        const dd = String(hoy.getDate()).padStart(2, '0');
+        const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+        const yyyy = hoy.getFullYear();
+        return `${dd}/${mm}/${yyyy}`;
+    }
+
     function normalizarResenha(item) {
-        if (typeof item === 'string') return { texto: item, tipo: 'Personal', rating: 5 };
+        if (typeof item === 'string') {
+            return { texto: item, tipo: 'Personal', rating: 5, fecha: fechaHoyFormateada() };
+        }
         if (item && typeof item === 'object') {
             return {
                 texto: item.texto ?? '',
                 tipo: item.tipo ?? 'Personal',
                 rating: typeof item.rating === 'number' ? item.rating : 5,
+                fecha: item.fecha || fechaHoyFormateada(),
             };
         }
-        return { texto: String(item), tipo: 'Personal', rating: 5 };
+        return { texto: String(item), tipo: 'Personal', rating: 5, fecha: fechaHoyFormateada() };
     }
 
     function claseParaTipo(tipo) {
@@ -143,13 +154,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const fragment = document.createDocumentFragment();
         misResenhas.forEach((resenha, idx) => {
-            const { texto, tipo, rating } = resenha;
+            const { texto, tipo, rating, fecha } = resenha;
 
             const node = resenhaTemplate.content.firstElementChild.cloneNode(true);
             node.className = `${LI_BASE_CLASS} resenha-item flex`;
 
             const tipoEl = node.querySelector('[data-role="tipo"]');
             const estrellasEl = node.querySelector('[data-role="estrellas"]');
+            const fechaEl = node.querySelector('[data-role="fecha"]');
             const textoEl = node.querySelector('[data-role="texto"]');
             const eliminarBtn = node.querySelector('[data-role="eliminar"]');
 
@@ -158,6 +170,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             estrellasEl.textContent = estrellasParaRating(rating);
             estrellasEl.setAttribute('aria-label', `Puntuación ${rating} de 5`);
+
+            if (fechaEl) {
+                fechaEl.textContent = fecha || fechaHoyFormateada();
+                fechaEl.setAttribute('aria-label', `Fecha de publicación: ${fecha || fechaHoyFormateada()}`);
+            }
 
             // Seguridad: nunca insertamos el texto del usuario con innerHTML
             textoEl.textContent = normalizarMensaje(texto);
@@ -197,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        misResenhas.push({ texto: mensaje, tipo, rating });
+        misResenhas.push({ texto: mensaje, tipo, rating, fecha: fechaHoyFormateada() });
         resetFormularioResenha();
         guardarYActualizar();
     });

@@ -167,9 +167,14 @@
                     <template id="resenha-template">
                         <li class="resenha-item">
                             <div class="flex flex-col gap-2 pr-4 max-w-[80%]">
-                                <div class="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wide font-semibold">
-                                    <span data-role="tipo" class="inline-flex items-center px-2 py-0.5 rounded-full"></span>
-                                    <span data-role="estrellas" class="text-yellow-400 dark:text-yellow-300 select-none"></span>
+                                <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] uppercase tracking-wide font-semibold">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span data-role="tipo" class="inline-flex items-center px-2 py-0.5 rounded-full"></span>
+                                        <span data-role="estrellas" class="text-yellow-400 dark:text-yellow-300 select-none"></span>
+                                    </div>
+                                    <span data-role="fecha" class="text-[10px] font-normal text-slate-500 dark:text-slate-400">
+                                        01/01/2025
+                                    </span>
                                 </div>
                                 <span data-role="texto" class="text-[#333] dark:text-gray-100 text-[15px] leading-relaxed font-medium break-words"></span>
                             </div>
