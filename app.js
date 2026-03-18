@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sufijo = snippet.length === 40 ? '…' : '';
         return `Eliminar reseña (${tipo}, ${rating} de 5): ${snippet}${sufijo}`;
     }
-
+    
     /**
      * Muestra un "toast" (notificación no intrusiva) en la esquina superior derecha.
      *
@@ -137,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
      * - Es accesible: `role="status"` + `aria-live="polite"`.
      * - Se auto-destruye tras `durationMs` y limpia el contenedor si queda vacío.
      *
-     * @param {{accion: string, mensaje: string, durationMs?: number}} params
      * @returns {void}
      */
     function mostrarAviso({ accion, mensaje, durationMs = 5000 }) {
@@ -148,15 +147,18 @@ document.addEventListener('DOMContentLoaded', () => {
             container.className = 'fixed top-4 right-4 z-[9999] flex flex-col gap-2';
             document.body.appendChild(container);
         }
-
+    
         const toast = document.createElement('div');
         toast.setAttribute('role', 'status');
         toast.setAttribute('aria-live', 'polite');
         toast.className = 'max-w-xs px-4 py-2 rounded-lg bg-slate-900/70 text-white text-sm shadow-lg border border-white/10 backdrop-blur-sm';
-        toast.textContent = `Acción: ${accion}. ${mensaje}`;
-
+        
+        // condicional de que si existe "accion", la pone. Si no, solo pone el mensaje. 
+        //para que ya no salga la acción en el mensaje.
+        toast.textContent = accion ? `${accion}: ${mensaje}` : mensaje;
+    
         container.appendChild(toast);
-
+    
         window.setTimeout(() => {
             toast.remove();
             if (container && container.childElementCount === 0) container.remove();
@@ -355,11 +357,60 @@ document.addEventListener('DOMContentLoaded', () => {
         misResenhas.splice(indice, 1);
         guardarYActualizar();
         mostrarAviso({
-            accion: 'borrarResenha',
             mensaje: 'Su mensaje ha sido eliminado correctamente',
             durationMs: 5000,
         });
     };
+    //  ORDENAR LAS RESEÑAS DE MAS ANTIGUO A MÁS NUEVO Y VICEVERSA
+    const selectorOrden = document.getElementById('orden-resenha');
+    selectorOrden.addEventListener('change', () => {
+        const orden = selectorOrden.value;
+    
+        misResenhas.sort((a, b) => { 
+            // convertir el texto a fecha 
+            const convertirFecha = (fechaStr) => {
+                const [dia, mes, año] = fechaStr.split('/');
+                return new Date(año, mes - 1, dia); 
+            };
+    
+            //Convertimos las fechas de las reseñas A y B
+            const fechaA = convertirFecha(a.fecha);
+            const fechaB = convertirFecha(b.fecha);
+    
+            // Devolvemos el resultado de la resta según la elección
+            if (orden === 'nuevo') {
+                return fechaB - fechaA; // El más reciente (número más grande) primero
+            } else {
+                return fechaA - fechaB; // El más antiguo primero
+            }
+        });
+        guardarYActualizar();
+    });
+    
+    // MARCAR TODO COMO LEÍDO 
+    // apturamos el botón que añadimos en el HTML
+    const btnMarcarTodo = document.getElementById('btn-marcar-todo');
+
+    btnMarcarTodo.addEventListener('click', () => {
+        //Verificamos si hay reseñas 
+        if (misResenhas.length === 0) return;
+
+        // Modificamos el array misResenhas
+        // Como es el estado de tu aplicación.
+        misResenhas.forEach(resenha => {
+            resenha.leido = true;
+        });
+
+        // Invocamos tu función maestra que guarda en LocalStorage y repinta la UI
+        guardarYActualizar();
+
+        // Opcional: Mostrar un aviso usando tu función mostrarAviso
+        mostrarAviso({
+            mensaje: 'Todas las reseñas han sido marcadas como leídas',
+            durationMs: 3000
+        });
+    });
+
 
     const buscador = document.getElementById('buscador');
     buscador.addEventListener('input', () => {
