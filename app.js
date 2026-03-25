@@ -1,3 +1,4 @@
+import { apiClient } from './src/api/client.js';
 document.addEventListener('DOMContentLoaded', () => {
 
     const STORAGE_KEY = 'mis_resenhas';
@@ -9,9 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const LI_BASE_CLASS = 'resenha-item bg-white dark:bg-slate-800 p-5 mb-5 rounded-[12px] border-l-[6px] border-l-slate-400 shadow-md flex justify-between items-center break-inside-avoid w-full transition-transform hover:translate-x-1';
 
     const form = document.getElementById('resenha');
-    const input = document.getElementById('texto');
-    const tipoSelect = document.getElementById('tipo-resenha');
-    const ratingSelect = document.getElementById('rating');
+    const mensaje = document.getElementById('texto');
+    const categoria = document.getElementById('tipo');
+    const estrellas = document.getElementById('rating');
     const lista = document.getElementById('listapubli');
     const resenhaTemplate = document.getElementById('resenha-template');
     const themeBtn = document.getElementById('theme-toggle');
@@ -85,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return {
                 ...base,
                 ...item,
+                tipo: item.tipo || item.prioridad || base.tipo,
                 rating: typeof item.rating === 'number' ? item.rating : base.rating,
                 fecha: typeof item.fecha === 'string' && item.fecha.trim()
                     ? item.fecha
@@ -128,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sufijo = snippet.length === 40 ? '…' : '';
         return `Eliminar reseña (${tipo}, ${rating} de 5): ${snippet}${sufijo}`;
     }
-    
+
     /**
      * Muestra un "toast" (notificación no intrusiva) en la esquina superior derecha.
      *
@@ -147,18 +149,18 @@ document.addEventListener('DOMContentLoaded', () => {
             container.className = 'fixed top-4 right-4 z-[9999] flex flex-col gap-2';
             document.body.appendChild(container);
         }
-    
+
         const toast = document.createElement('div');
         toast.setAttribute('role', 'status');
         toast.setAttribute('aria-live', 'polite');
         toast.className = 'max-w-xs px-4 py-2 rounded-lg bg-slate-900/70 text-white text-sm shadow-lg border border-white/10 backdrop-blur-sm';
-        
+
         // condicional de que si existe "accion", la pone. Si no, solo pone el mensaje. 
         //para que ya no salga la acción en el mensaje.
         toast.textContent = accion ? `${accion}: ${mensaje}` : mensaje;
-    
+
         container.appendChild(toast);
-    
+
         window.setTimeout(() => {
             toast.remove();
             if (container && container.childElementCount === 0) container.remove();
@@ -326,22 +328,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     pintarTarjetas();
-
-    form.addEventListener('submit', (e) => {
+    // añado 'async' para poder esperar al servidor
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const mensaje = limpiarTexto(normalizarMensaje(input.value));
-        if (!mensaje) return;
 
-        const tipo = tipoSelect.value;
-        const rating = Number(ratingSelect.value) || 5;
-        if (esResenhaRepetida(mensaje, tipo, rating)) {
-            alert('Esa reseña ya ha sido publicada');
-            return;
+        const boton = document.getElementById('boton-publicar');
+        //estado de carga
+        boton.disabled = true;
+        boton.textContent = 'Enviando...';
+
+        try {
+            const textoLimpio = limpiarTexto(normalizarMensaje(mensaje.value));
+
+            if (!textoLimpio) {
+                throw new Error("El mensaje no puede estar vacío");
+            }
+
+            // Usamos 'categoria' y 'estrellas' (tus variables de las líneas 14 y 15)
+            const categoriaElegida = categoria.value;
+            const ratingElegido = Number(estrellas.value) || 5;
+
+            // Conexión con el servidor
+            const nuevaResenhaServidor = await apiClient.createTask({
+                texto: textoLimpio,
+                tipo: categoriaElegida,
+                rating: ratingElegido
+            });
+
+            // Si el servidor responde bien, actualizamos la lista
+            misResenhas.push(normalizarResenha(nuevaResenhaServidor));
+
+            guardarYActualizar();
+
+            // Limpiamos el formulario (usando tus variables correctas)
+            mensaje.value = '';
+            categoria.value = 'Personal';
+            estrellas.value = '5';
+
+            pintarTarjetas();
+            mostrarAviso({ mensaje: '¡Reseña guardada con éxito!' });
+
+        } catch (error) {
+            mostrarAviso({ mensaje: `Error: ${error.message}` });
+        } finally {
+            ///pase lo que pase, devolvemos el botón a su estado original.
+            boton.disabled = false;
+            boton.textContent = 'Publicar';
         }
-
-        misResenhas.push({ texto: mensaje, tipo, rating, fecha: fechaHoyFormateada(), leido: false });
-        resetFormularioResenha();
-        guardarYActualizar();
     });
 
     /**
@@ -357,7 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
         misResenhas.splice(indice, 1);
         guardarYActualizar();
         mostrarAviso({
-            mensaje: 'Su mensaje ha sido eliminado correctamente',
+            mensaje: 'Su reseña ha sido eliminado correctamente',
             durationMs: 5000,
         });
     };
@@ -365,18 +398,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectorOrden = document.getElementById('orden-resenha');
     selectorOrden.addEventListener('change', () => {
         const orden = selectorOrden.value;
-    
-        misResenhas.sort((a, b) => { 
+
+        misResenhas.sort((a, b) => {
             // convertir el texto a fecha 
             const convertirFecha = (fechaStr) => {
                 const [dia, mes, año] = fechaStr.split('/');
-                return new Date(año, mes - 1, dia); 
+                return new Date(año, mes - 1, dia);
             };
-    
+
             //Convertimos las fechas de las reseñas A y B
             const fechaA = convertirFecha(a.fecha);
             const fechaB = convertirFecha(b.fecha);
-    
+
             // Devolvemos el resultado de la resta según la elección
             if (orden === 'nuevo') {
                 return fechaB - fechaA; // El más reciente (número más grande) primero
@@ -386,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         guardarYActualizar();
     });
-    
+
     // MARCAR TODO COMO LEÍDO 
     // apturamos el botón que añadimos en el HTML
     const btnMarcarTodo = document.getElementById('btn-marcar-todo');

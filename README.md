@@ -10,9 +10,7 @@ Portfolio web con las tecnologias:
 - **Opción simple**: abre `index.html` en tu navegador.
 - **Recomendado**: usa un servidor local (por ejemplo la extensión **Live Server** en Cursor/VS Code) para evitar posibles restricciones del navegador.
 
-# Funcionalidades
-
-# Experiencia de usuario
+# Funcionalidades y Experiencia de usuario
 
 - Modo oscuro (Tailwind `darkMode: 'class'`)
   - Un botón (`#theme-toggle`) alterna la clase `dark` en el elemento raíz (`<html>`).
@@ -44,9 +42,6 @@ La sección `#recomendaciones` implementa un mini-sistema CRUD en el navegador:
   - Se guarda dentro de cada reseña en LocalStorage (misma clave `mis_resenhas`), por lo que persiste al recargar.
   - Uso: marca/desmarca para llevar control visual de qué reseñas ya revisaste.
 
-- Persistencia en LocalStorage
-  - Las reseñas se guardan bajo una única clave (`mis_resenhas`).
-  - Incluye normalización/migración: si existían reseñas antiguas (p. ej. strings), se convierten al formato actual.
 
 - Contador de reseñas
   - Muestra el total publicado y se actualiza automáticamente al añadir/eliminar.
@@ -58,47 +53,25 @@ La sección `#recomendaciones` implementa un mini-sistema CRUD en el navegador:
   - Si no hay reseñas, se muestra un mensaje amigable (“Aún no hay reseñas…”).
 
 # Testing manual de la aplicación (documentación)
-
-Estas pruebas están adaptadas a este proyecto (portfolio) y, en concreto, a la mini-app de **Recomendaciones (reseñas)**.
-
 - Prueba la app con la lista vacía
   - **Pasos**: borra todas las reseñas (o limpia LocalStorage `mis_resenhas`) y recarga.
   - **Resultado esperado**: se muestra el estado vacío “Aún no hay reseñas…”, y el contador queda en 0.
-  - **Resultado obtenido**: OK.
+  - **Resultado obtenido**: todo ok.
 
-- Intenta añadir una tarea sin título
-  - En este proyecto no hay “tareas”; el equivalente es **publicar una reseña sin texto**.
-  - **Pasos**: deja el textarea vacío y pulsa **Publicar**.
-  - **Resultado esperado**: no se publica nada (la lista y el contador no cambian).
-  - **Resultado obtenido**: OK.
+- Intenta añadir una tarea de meos de 3 letras
+  - **Pasos**: has una pubi de solo una letra "a"
+  - **Resultado esperado**: sale el error que es demasiado corto
+  - **Resultado obtenido**: todo ok.
 
-- Añade una tarea con un título muy largo
-  - Equivalente: **publicar una reseña con texto muy largo**.
-  - **Pasos**: pega un texto largo (varias líneas) y publica.
-  - **Resultado esperado**: la tarjeta se renderiza correctamente, el texto hace wrap (no rompe el layout), y se guarda en LocalStorage.
-  - **Resultado obtenido**: OK.
 
 - Marca varias tareas como completadas
-  - En este proyecto no hay “tareas”; el equivalente es **marcar varias reseñas como Leído**.
-  - **Pasos**: crea varias reseñas y marca el checkbox **Leído** en varias tarjetas.
+  - **Pasos**: crea varias reseñas y marca el checkbox Leído en varias tarjetas.
   - **Resultado esperado**: las reseñas quedan marcadas como leídas y, al recargar, se mantiene el estado.
-  - **Resultado obtenido**: OK.
+  - **Resultado obtenido**: todo ok.
 
-- Elimina varias tareas
-  - Equivalente: **eliminar varias reseñas**.
-  - **Pasos**: crea varias reseñas y pulsa **Eliminar** en varias tarjetas.
-  - **Resultado esperado**: se eliminan, el contador se actualiza, y aparece un toast de confirmación.
-  - **Resultado obtenido**: OK.
-
-- Recarga la página para comprobar que los datos persisten
-  - **Pasos**: publica reseñas, recarga la página.
-  - **Resultado esperado**: las reseñas siguen apareciendo (persistencia en LocalStorage con la clave `mis_resenhas`).
-  - **Resultado obtenido**: OK.
-
-# Ejemplos de uso (rápidos)
+# Ejemplos de uso
 
 # Publicar una reseña
-
 1. Ve a **Recomendaciones**.
 2. Elige **Tipo de reseña** y **Puntuación**.
 3. Escribe tu recomendación y pulsa **Publicar**.
@@ -110,47 +83,68 @@ Estas pruebas están adaptadas a este proyecto (portfolio) y, en concreto, a la 
 
 1. En el campo **“Filtrar recomendaciones”**, escribe una palabra (por ejemplo: `java`).
 2. La lista se actualiza en tiempo real mostrando solo las reseñas que coinciden.
+3. Puedes filtrar tambien de más antigua a más nueva
 
 # Eliminar una reseña
 
 1. Pulsa **Eliminar** en una tarjeta.
 2. La tarjeta desaparece, el **contador** se actualiza y verás un **toast** de confirmación.
 
-# Marcar una reseña como “Leído”
-
-1. En una tarjeta, marca el checkbox **Leído**.
-2. Recarga la página: la reseña seguirá marcada como leída (persistencia en LocalStorage).
-
 # Modo oscuro
-
 1. Pulsa el botón 🌓 de la cabecera.
 2. La UI cambia de forma consistente (fondos, textos y badges usan `dark:*`).
 
-# Tilt 3D en “Sobre mí”
-
-- **Desktop**: pasa el ratón por encima de una tarjeta.
-- **Móvil**: toca una tarjeta para activar/desactivar el tilt.
-
 # Estructura del proyecto
+- index.html: estructura de la página + Tailwind (CDN) + plantilla HTML (`<template>`) para reseñas.
+- app.js: lógica de UI, modo oscuro, reseñas, LocalStorage, renderizado y micro-interacciones. Incluye **documentación JSDoc** en las funciones clave.
+- client.js: es el mensajero que hace las peticiones (get,post,delete) usando la API.
+-server: carpeta con node.js, las rutas y el lcontrolador que guarda las reseñasl, en pocas palabras lo que no se ve.
 
-- `index.html`: estructura de la página + Tailwind (CDN) + plantilla HTML (`<template>`) para reseñas.
-- `app.js`: lógica de UI, modo oscuro, reseñas, LocalStorage, renderizado y micro-interacciones. Incluye **documentación JSDoc** en las funciones clave.
+# Middlewares:
+- CORS: Mecanismo de seguridad basado en cabeceras HTTP que permite a un servidor indicar cualquier dominio, esquema o puerto, distinto al suyo propio desde el cual un navegador debería permitir la carga de recursos.
+  - En mi web: ya que el frontend esta en el puerto 5500 y el backend en 3000, el navegador bloquearia la comunicación por politica del mismo origen, lo que hace este middleware añade las cabeceras necesarias a la respuesta para autorizar la conexion del cliente.
 
-# Detalles técnicos (alto nivel)
+- JSON: Es un middleware encargado del parseo del cuerpo de la petición. analiza las solicitudes entrantes con el encabezado.
 
-# Renderizado eficiente de reseñas
+  -en mi web: Cuando enviamos una reseña, los datos viajan como un flujo de texto plano, este middleware intercepta ese flujo, lo transforma en un objeto "req.body" javaScript legible y lo inyecta en el objeto para que el controlador pueda extrar propiedades como en mi caso de texxto, prioridad y puntuacion
 
-- Se renderiza desde un `<template>` (`#resenha-template`) para mantener HTML reutilizable.
-- Se usa un `DocumentFragment` para añadir tarjetas al DOM con menos reflows.
-- El contador se actualiza desde el flujo de render, evitando estados inconsistentes.
 
-# Seguridad básica
+# Detalles técnicos
+- Se renderiza desde un template (#resenha-template) para mantener HTML reutilizable.
 
-- El texto del usuario se inserta en el DOM con `textContent` (no `innerHTML`).
-- Se aplica un saneado mínimo adicional (escape de `<` y `>`).
+- Se usa un DocumentFragment para que la web no vaya lenta al añadir muchas tarjetas.
+
+- el contador y las tarjetas se actualizan con los datos que vienen directamente del servidor.
+
+- Endpoint Central: Todo pasa por http://localhost:3000/api/v1/tasks. Esto hace que si yo publico algo, tú lo puedas ver (persistencia compartida).
+- sin embargo en la parte de marcar como leido es localStorage porque si yo le marco leido es por mi y no por los demás entonces esto ya sería más personal
+
+- Arquitectura de Api Rest:
+  - Antes se tenia LocaStorage, donde los datos se almacenaban de forma local, o sea solo tu mismo podias verlo en el navegador mediante una clave única.
+  - con el Api Rest, se almacena todas las reseñas, con el endpoint (el que hace posible la comunicación entre cliente y servidor, recibiendo peticiones y devolviendo respuestas en JSOn en su mayoria) central cualquierapuede ver las reseñas de cualquiera que publico, asi se tiene una persistencia compartida.
+
+- ahora el servidor es el que manda, si intentaré enviar una reseña vacia o sin texto, el servidor te frena.
+
+- Express JSON: Usamos este middleware para que el servidor pueda leer y entender los objetos que enviamos desde el formulario.
+
+# API REST:
+ -GET: recupera el listado completo de reseñas.
+  -ejemplo: 
+    - Endpoint: http://localhost:3000/api/v1/tasks
+    - el servidor recupera el array de objetos del modelo y lo envia como respuesta con un estado 200.
+
+ -POST: crea una nueva reseña enviando un objeto JSON 
+  - ejemplo:
+    - Endpoint: http://localhost:3000/api/v1/tasks.
+    - Datos que viajan y convierten en JSON: {"texto": "Ejemplo", "prioridad": "Profesional", "puntuacion": 4}
+    - el middleware JSON traduce ese texto plano, el controlador valida los datos y el servidor responde con un 201 created.
+
+ -DELETE: Elimina una reseña especiifica mediante su identificador.
+  -Ejemplo:  http://localhost:3000/api/v1/tasks/:id
+  - se envia el ID como parametro, el servidor filtra y elimina la coincidencia.
+
 
 # Personalización rápida
-
 - **Textos y secciones**: edita el contenido de `index.html`.
 - **Colores/estilo**: ajusta clases Tailwind (`bg-*`, `text-*`, `dark:*`) directamente en `index.html`.
 - **Tipos de reseña**:
@@ -158,13 +152,6 @@ Estas pruebas están adaptadas a este proyecto (portfolio) y, en concreto, a la 
   - Ajusta el mapeo de colores en `TIPO_CLASES` en `app.js`.
 
 
-# Roadmap sugerido (mejoras futuras)
 
-- Persistir también el estado del modo oscuro (recordar preferencia del usuario).
-- Añadir tests ligeros para normalización de reseñas.
-- Exportar/importar reseñas (JSON) para portabilidad.
-
-
-**Proyecto**: Portfolio Maite Castillo  
 
 
