@@ -13,9 +13,8 @@ app.use(express.urlencoded({extended: true}));
 app.use('/api/v1/tasks', taskRoutes); //para activar las rutas
 
 app.get('/', (req, res) => {
-  res.send('Servidor de TaskFlow funcionando correctamente');
+  res.send('Servidor TaskFlow V2 - ¡Conexión establecida!');
 });
-
 
 //fase C:
 // agregamos un middleware para tener controlado los erroes

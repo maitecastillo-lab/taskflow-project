@@ -5,7 +5,8 @@
   ],
   "rewrites": [
     { "source": "/api/v1/tasks", "destination": "index.js" },
-    { "source": "/api/v1/tasks/:path*", "destination": "index.js" },
+    { "source": "/api/v1/tasks/:id", "destination": "index.js" },
+    { "source": "/api/v1/tasks/(.*)", "destination": "index.js" },
     { "source": "/(.*)", "destination": "/$1" }
   ]
 }
