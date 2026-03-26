@@ -29,32 +29,31 @@ export const apiClient = {
     // se crea una funcion para mandar las reseñas (post)
     async createTask(data) {
         try {
-            // Enviamos la petición indicando que es un POST (creación).
             const res = await fetch(API_URL, {
                 method: 'POST',
-                // Decimos al servidor que lo que le estamos mandando es json.
                 headers: { 'Content-Type': 'application/json' },
-                // convertimos la reseña en texto JSON para que pueda ser procesado por el sistema.
                 body: JSON.stringify({
-                    texto: data.texto, // Tu backend espera la palabra 'texto'
+                    texto: data.texto,
                     prioridad: data.tipo,
                     puntuacion: data.rating
                 })
             });
-             // esperamos la respuesta del servidor.
-            const result = await res.json();
 
-            //gestion de error del backend: si el texto es muy corto:
-            if(!res.ok){
-                throw new Error(result.error || 'La reseña es muy corta, no se puede publicar')
+            // comprobamos si la respuesta es OK
+            if (!res.ok) {
+                // Si hay error, intentamos leer el mensaje de error del servidor
+                const errorData = await res.json().catch(() => ({ error: 'Error desconocido' }));
+                throw new Error(errorData.error || 'La reseña no se pudo publicar');
             }
+
+            // leemos el resultado final
+            const result = await res.json();
             return result;
-        }catch (error){
-            //gestion error de red
+
+        } catch (error) {
             console.error("Error al crear: ", error);
             alert("Error: " + error.message);
-            throw error; //lanzamos el error para que sepa que fallo.
-
+            throw error;
         }
     },
     // Función para borrar una reseña del servidor -delete-
