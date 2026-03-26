@@ -1,7 +1,7 @@
-const path = require('path');
 require('dotenv').config(); // carga las variables del archivo .env 
 const express = require('express'); //la libreria para creal el servidor
 const cors = require('cors'); // el "permiso" para que pueda comunicarse entre ellos el fronted y backend
+const path = require('path');
 const taskRoutes = require('./server/routes/task.routes.js');//para importar las rutas
 
 //ya no usamos el require como arriba si no llamamos el port 
@@ -18,6 +18,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+//esto es porque no me aparece la imagen 
+app.use(express.static(__dirname));
 
 //fase C:
 // agregamos un middleware para tener controlado los erroes

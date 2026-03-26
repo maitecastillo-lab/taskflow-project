@@ -37,8 +37,8 @@ export const apiClient = {
                 // convertimos la reseña en texto JSON para que pueda ser procesado por el sistema.
                 body: JSON.stringify({
                     texto: data.texto, // Tu backend espera la palabra 'texto'
-                    prioridad: data.tipo,
-                    puntuacion: data.rating
+                    tipo: data.tipo,
+                    rating: data.rating
                 })
             });
              // esperamos la respuesta del servidor.
