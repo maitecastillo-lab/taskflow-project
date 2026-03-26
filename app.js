@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const textoLimpio = limpiarTexto(normalizarMensaje(mensaje.value));
 
             if (!textoLimpio) {
-                throw new Error("El mensaje no puede estar vacío");
+                throw new Error("La reseña no puede estar vacía");
             }
 
             // Usamos 'categoria' y 'estrellas' (tus variables de las líneas 14 y 15)
@@ -405,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Fallo al borrar:", error);
             mostrarAviso({
-                mensaje: 'No se pudo eliminar de la API: ' + error.message,
+                mensaje: 'No se pudo eliminar: ' + error.message,
                 durationMs: 5000,
             });
         }
