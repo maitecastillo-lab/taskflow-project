@@ -56,5 +56,25 @@ export const apiClient = {
             throw error; //lanzamos el error para que sepa que fallo.
 
         }
+    },
+    // Función para borrar una reseña del servidor -delete-
+    async deleteTask(id) {
+        try {
+            // Construimos la URL con el ID al final,
+            const res = await fetch(`${API_URL}/${id}`, {
+                method: 'DELETE', // Indicamos que es un borrado
+            });
+
+            const result = await res.json();
+
+            if (!res.ok) {
+                throw new Error(result.message || 'No se pudo eliminar la reseña');
+            }
+
+            return result; // Devolvemos la confirmación del servidor
+        } catch (error) {
+            console.error("Error al eliminar:", error);
+            throw error;
+        }
     }
 };

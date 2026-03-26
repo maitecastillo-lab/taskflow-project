@@ -378,47 +378,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /**
-     * Elimina una reseña por índice y sincroniza persistencia + UI.
-     *
-     * Nota: se expone en `window` para que sea accesible desde la delegación del click
-     * (y porque el proyecto ya venía con ese patrón).
-     *
-     * @param {number} indice
-     * @returns {void}
-     */
-    window.borrarResenha = (indice) => {
-        misResenhas.splice(indice, 1);
-        guardarYActualizar();
-        mostrarAviso({
-            mensaje: 'Su reseña ha sido eliminado correctamente',
-            durationMs: 5000,
-        });
-    };
-    //  ORDENAR LAS RESEÑAS DE MAS ANTIGUO A MÁS NUEVO Y VICEVERSA
-    const selectorOrden = document.getElementById('orden-resenha');
-    selectorOrden.addEventListener('change', () => {
-        const orden = selectorOrden.value;
+      * Elimina una reseña por índice y sincroniza API REST + LocalStorage + UI.
+      */
+    window.borrarResenha = async (indice) => {
+        try {
+            // 1. Identificamos qué reseña queremos borrar
+            const resenhaABorrar = misResenhas[indice];
 
-        misResenhas.sort((a, b) => {
-            // convertir el texto a fecha 
-            const convertirFecha = (fechaStr) => {
-                const [dia, mes, año] = fechaStr.split('/');
-                return new Date(año, mes - 1, dia);
-            };
-
-            //Convertimos las fechas de las reseñas A y B
-            const fechaA = convertirFecha(a.fecha);
-            const fechaB = convertirFecha(b.fecha);
-
-            // Devolvemos el resultado de la resta según la elección
-            if (orden === 'nuevo') {
-                return fechaB - fechaA; // El más reciente (número más grande) primero
-            } else {
-                return fechaA - fechaB; // El más antiguo primero
+            // 2. Si la reseña tiene un ID, avisamos al servidor (API REST)
+            if (resenhaABorrar && resenhaABorrar.id) {
+                await apiClient.deleteTask(resenhaABorrar.id);
             }
-        });
-        guardarYActualizar();
-    });
+
+            // 3. Si el servidor responde OK (o si no tenía ID por ser antigua),
+            // la borramos de nuestra lista local
+            misResenhas.splice(indice, 1);
+
+            // 4. Guardamos en LocalStorage y repintamos la pantalla
+            guardarYActualizar();
+
+            mostrarAviso({
+                mensaje: 'Reseña eliminada correctamente del servidor',
+                durationMs: 3000,
+            });
+
+        } catch (error) {
+            console.error("Fallo al borrar:", error);
+            mostrarAviso({
+                mensaje: 'No se pudo eliminar de la API: ' + error.message,
+                durationMs: 5000,
+            });
+        }
+    };
 
     // MARCAR TODO COMO LEÍDO 
     // apturamos el botón que añadimos en el HTML
