@@ -226,34 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         themeBtn.setAttribute('aria-pressed', isDark);
     });
 
-    // cargamos lo que haya en el navegador (LocalStorage) al empezar
     let misResenhas = (JSON.parse(localStorage.getItem(STORAGE_KEY)) || []).map(normalizarResenha);
-
-    /**
-     * Función para que la API mande sobre el LocalStorage.
-     * Si el servidor dice que no hay nada, borramos lo local automáticamente.
-     */
-    async function sincronizarConServidor() {
-        try {
-            const resenhasServidor = await apiClient.getTasks();
-
-            if (Array.isArray(resenhasServidor)) {
-                // sobreescribimos con lo que diga el servidor (que es [])
-                misResenhas = resenhasServidor.map(normalizarResenha);
-
-                // guardamos este cambio (la lista vacía) en el LocalStorage
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(misResenhas));
-
-                // Vuelve a contar las reseñas y actualiza el número de la pantalla
-                pintarTarjetas();
-            }
-        } catch (error) {
-            console.warn("Usando datos locales: el servidor no respondió.");
-        }
-    }
-
-    // 2. ¡IMPORTANTE! Ejecutamos la sincronización nada más cargar
-    sincronizarConServidor();
 
     /**
      * Persistencia única del estado:
@@ -368,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const textoLimpio = limpiarTexto(normalizarMensaje(mensaje.value));
 
             if (!textoLimpio) {
-                throw new Error("La reseña no puede estar vacía");
+                throw new Error("El mensaje no puede estar vacío");
             }
 
             // Usamos 'categoria' y 'estrellas' (tus variables de las líneas 14 y 15)
@@ -405,38 +378,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /**
-      * Elimina una reseña por índice y sincroniza API REST + LocalStorage + UI.
-      */
-    window.borrarResenha = async (indice) => {
-        try {
-            // 1. Identificamos qué reseña queremos borrar
-            const resenhaABorrar = misResenhas[indice];
-
-            // 2. Si la reseña tiene un ID, avisamos al servidor (API REST)
-            if (resenhaABorrar && resenhaABorrar.id) {
-                await apiClient.deleteTask(resenhaABorrar.id);
-            }
-
-            // 3. Si el servidor responde OK (o si no tenía ID por ser antigua),
-            // la borramos de nuestra lista local
-            misResenhas.splice(indice, 1);
-
-            // 4. Guardamos en LocalStorage y repintamos la pantalla
-            guardarYActualizar();
-
-            mostrarAviso({
-                mensaje: 'Reseña eliminada correctamente del servidor',
-                durationMs: 3000,
-            });
-
-        } catch (error) {
-            console.error("Fallo al borrar:", error);
-            mostrarAviso({
-                mensaje: 'No se pudo eliminar: ' + error.message,
-                durationMs: 5000,
-            });
-        }
+     * Elimina una reseña por índice y sincroniza persistencia + UI.
+     *
+     * Nota: se expone en `window` para que sea accesible desde la delegación del click
+     * (y porque el proyecto ya venía con ese patrón).
+     *
+     * @param {number} indice
+     * @returns {void}
+     */
+    window.borrarResenha = (indice) => {
+        misResenhas.splice(indice, 1);
+        guardarYActualizar();
+        mostrarAviso({
+            mensaje: 'Su reseña ha sido eliminado correctamente',
+            durationMs: 5000,
+        });
     };
+    //  ORDENAR LAS RESEÑAS DE MAS ANTIGUO A MÁS NUEVO Y VICEVERSA
+    const selectorOrden = document.getElementById('orden-resenha');
+    selectorOrden.addEventListener('change', () => {
+        const orden = selectorOrden.value;
+
+        misResenhas.sort((a, b) => {
+            // convertir el texto a fecha 
+            const convertirFecha = (fechaStr) => {
+                const [dia, mes, año] = fechaStr.split('/');
+                return new Date(año, mes - 1, dia);
+            };
+
+            //Convertimos las fechas de las reseñas A y B
+            const fechaA = convertirFecha(a.fecha);
+            const fechaB = convertirFecha(b.fecha);
+
+            // Devolvemos el resultado de la resta según la elección
+            if (orden === 'nuevo') {
+                return fechaB - fechaA; // El más reciente (número más grande) primero
+            } else {
+                return fechaA - fechaB; // El más antiguo primero
+            }
+        });
+        guardarYActualizar();
+    });
 
     // MARCAR TODO COMO LEÍDO 
     // apturamos el botón que añadimos en el HTML

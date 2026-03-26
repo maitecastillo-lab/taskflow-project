@@ -1,20 +1,22 @@
 require('dotenv').config(); // carga las variables del archivo .env 
 const express = require('express'); //la libreria para creal el servidor
 const cors = require('cors'); // el "permiso" para que pueda comunicarse entre ellos el fronted y backend
-const taskRoutes = require('./server/routes/task.routes.js');
+const taskRoutes = require('./routes/task.routes.js'); //para importar las rutas
+
+//ya no usamos el require como arriba si no llamamos el port 
 const PORT = process.env.PORT || 3000;
 const app = express(); //aqui creamos el sevidor
 
 //mMIDDLEWARES
 app.use(cors()); // permite que en la pagina entre a pedir datos al servidor
 app.use(express.json()); //aqui entiende una tarea en formato JSON
-app.use(express.urlencoded({extended: true}));
 
 app.use('/api/v1/tasks', taskRoutes); //para activar las rutas
 
 app.get('/', (req, res) => {
-  res.send('Servidor TaskFlow V2 - ¡Conexión establecida!');
+  res.send('Servidor de TaskFlow funcionando correctamente');
 });
+
 
 //fase C:
 // agregamos un middleware para tener controlado los erroes
@@ -48,12 +50,6 @@ app.use((err, req, res, next) => {
 
 
 //esto es al final porque es lo abre.
-// Solo encendemos el servidor con .listen si estamos en nuestro ordenador (Local)
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
-  });
-}
-
-// Esto es lo que Vercel necesita SIEMPRE
-module.exports = app;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
