@@ -1,12 +1,12 @@
 {
   "version": 2,
   "builds": [
-    { "src": "index.js", "use": "@vercel/node" }
+    { "src": "server/index.js", "use": "@vercel/node" }
   ],
-  "rewrites": [
-    { "source": "/api/v1/tasks", "destination": "/index.js" },
-    { "source": "/api/v1/tasks/(.*)", "destination": "/index.js" },
-    { "source": "/src/(.*)", "destination": "/src/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/server/index.js" },
+    { "src": "/src/(.*)", "dest": "/src/$1" },
+    { "src": "/(.*\\.(js|css|html|png|ico|svg))", "dest": "/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
