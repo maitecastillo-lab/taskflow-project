@@ -1,13 +1,19 @@
 {
   "version": 2,
-  "installCommand": "cd server && npm install",
   "builds": [
-    { "src": "server/index.js", "use": "@vercel/node" }
+    {
+      "src": "index.js",
+      "use": "@vercel/node"
+    }
   ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/server/index.js" },
-    { "src": "/src/(.*)", "dest": "/src/$1" },
-    { "src": "/(.*\\.(js|css|html|png|ico|svg))", "dest": "/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    {
+      "source": "/api/v1/tasks",
+      "destination": "index.js"
+    },
+    {
+      "source": "/api/v1/tasks/(.*)",
+      "destination": "index.js"
+    }
   ]
 }
