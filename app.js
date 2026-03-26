@@ -236,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {void}
      */
     function guardarYActualizar() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(misResenhas));
         pintarTarjetas();
     }
 
