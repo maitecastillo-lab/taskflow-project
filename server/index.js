@@ -2,8 +2,7 @@ require('dotenv').config();
 const express = require('express'); 
 const cors = require('cors'); 
 const path = require('path'); 
-const taskRoutes = require('./server/routes/task.routes.js'); 
-
+const taskRoutes = require('./src/routes/task.routes.js');
 const PORT = process.env.PORT || 3000;
 const app = express(); 
 
@@ -11,12 +10,11 @@ const app = express();
 app.use(cors()); 
 app.use(express.json()); 
 
-// 1. ESTO ARREGLA LA IMAGEN Y LOS SCRIPTS (Debe ir aquí arriba)
-// Permite que el navegador encuentre Calculadora.png y la carpeta /src
+// ESTO ARREGLA LA IMAGEN Y LOS SCRIPTS (Debe ir aquí arriba)
 app.use(express.static(__dirname)); 
 
 // --- RUTAS API ---
-app.use('/api/tasks', taskRoutes); 
+app.use('/api/v1/tasks', taskRoutes); 
 
 // 2. ESTO CARGA TU PÁGINA WEB AL ENTRAR
 app.get('/', (req, res) => {
