@@ -1,5 +1,16 @@
 import { apiClient } from '/src/api/client.js';
+// src/api/client.js
 
+const API_URL = '/api'; // <-- ESTO ES LO MÁS IMPORTANTE
+
+export const apiClient = {
+    // Aquí dentro tus funciones de getTasks, createTask, etc.
+    async getTasks() {
+        const response = await fetch(`${API_URL}/resenas`);
+        return response.json();
+    },
+    // ... el resto igual
+};
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Configuración y Variables
     const STORAGE_KEY = 'mis_resenhas';
