@@ -226,7 +226,37 @@ document.addEventListener('DOMContentLoaded', () => {
         themeBtn.setAttribute('aria-pressed', isDark);
     });
 
+    // cargamos lo que haya en el navegador (LocalStorage) al empezar
     let misResenhas = (JSON.parse(localStorage.getItem(STORAGE_KEY)) || []).map(normalizarResenha);
+
+    /**
+     * Función para que la API mande sobre el LocalStorage.
+     * Si el servidor dice que no hay nada, borramos lo local automáticamente.
+     */
+    async function sincronizarConServidor() {
+        try {
+            // pedimos a la API las reseñas reales
+            const resenhasServidor = await apiClient.getTasks();
+
+            // si la conexión es buena y nos da una lista (aunque esté vacía [])
+            if (Array.isArray(resenhasServidor)) {
+                // reemplazamos nuestras reseñas viejas por las que diga el servidor
+                misResenhas = resenhasServidor.map(normalizarResenha);
+
+                // Guardamos este cambio en el LocalStorage para que se actualice el contador
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(misResenhas));
+
+                // Repintamos las tarjetas,hara que si habia guardado en el localStorage se elimine
+                pintarTarjetas();
+            }
+        } catch (error) {
+            // Si no hay internet o falla la API, no borramos nada por si acaso
+            console.warn("Usando datos locales: el servidor no respondió.");
+        }
+    }
+
+    // 2. ¡IMPORTANTE! Ejecutamos la sincronización nada más cargar
+    sincronizarConServidor();
 
     /**
      * Persistencia única del estado:
