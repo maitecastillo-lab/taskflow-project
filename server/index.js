@@ -10,6 +10,7 @@ const app = express(); //aqui creamos el sevidor
 //mMIDDLEWARES
 app.use(cors()); // permite que en la pagina entre a pedir datos al servidor
 app.use(express.json()); //aqui entiende una tarea en formato JSON
+app.use(express.urlencoded({extended: true}));
 
 app.use('/api/v1/tasks', taskRoutes); //para activar las rutas
 
