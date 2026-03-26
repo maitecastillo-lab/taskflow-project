@@ -1,7 +1,7 @@
 require('dotenv').config(); // carga las variables del archivo .env 
 const express = require('express'); //la libreria para creal el servidor
 const cors = require('cors'); // el "permiso" para que pueda comunicarse entre ellos el fronted y backend
-const taskRoutes = require('./server/routes/task.routes.js');
+const taskRoutes = require('./routes/task.routes.js');
 //ya no usamos el require como arriba si no llamamos el port 
 const PORT = process.env.PORT || 3000;
 const app = express(); //aqui creamos el sevidor
