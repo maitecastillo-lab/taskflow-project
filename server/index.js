@@ -50,7 +50,12 @@ app.use((err, req, res, next) => {
 
 
 //esto es al final porque es lo abre.
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
+// Solo encendemos el servidor con .listen si estamos en nuestro ordenador (Local)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  });
+}
+
+// Esto es lo que Vercel necesita SIEMPRE
 module.exports = app;
