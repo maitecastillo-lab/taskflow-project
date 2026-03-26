@@ -2,19 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "server/index.js",
+      "src": "index.js",
       "use": "@vercel/node"
     }
   ],
   "rewrites": [
     {
-      "source": "/api/v1/tasks/:path*",
-      "destination": "/server/index.js"
+      "source": "/api/v1/tasks/(.*)",
+      "destination": "index.js"
     },
     {
       "source": "/api/v1/tasks",
-      "destination": "/server/index.js"
+      "destination": "index.js"
     }
   ]
 }
-
