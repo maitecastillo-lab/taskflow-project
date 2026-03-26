@@ -1,25 +1,22 @@
 {
-  "name": "pagina",
+  "name": "taskflow-project",
   "version": "1.0.0",
-  "description": "",
-  "homepage": "https://github.com/maitecastillo-lab/taskflow-project#readme",
-  "bugs": {
-    "url": "https://github.com/maitecastillo-lab/taskflow-project/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/maitecastillo-lab/taskflow-project.git"
-  },
-  "license": "ISC",
-  "author": "",
+  "description": "Proyecto TaskFlow",
+  "main": "index.js",
   "type": "commonjs",
-  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.27",
     "postcss": "^8.5.8",
-    "tailwindcss": "^4.2.1"
+    "tailwindcss": "^4.2.1",
+    "nodemon": "^3.1.14"
   }
 }
