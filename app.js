@@ -1,5 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
+import { apiClient } from './src/api/client.js';
 
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Configuración y Variables
     const STORAGE_KEY = 'mis_resenhas';
     const TIPO_CLASES = Object.freeze({
         Personal: 'bg-slate-500 text-white',
@@ -9,366 +11,169 @@ document.addEventListener('DOMContentLoaded', () => {
     const LI_BASE_CLASS = 'resenha-item bg-white dark:bg-slate-800 p-5 mb-5 rounded-[12px] border-l-[6px] border-l-slate-400 shadow-md flex justify-between items-center break-inside-avoid w-full transition-transform hover:translate-x-1';
 
     const form = document.getElementById('resenha');
-    const input = document.getElementById('texto');
-    const tipoSelect = document.getElementById('tipo-resenha');
-    const ratingSelect = document.getElementById('rating');
+    const mensaje = document.getElementById('texto');
+    const categoria = document.getElementById('tipo');
+    const estrellas = document.getElementById('rating');
     const lista = document.getElementById('listapubli');
-    const resenhaTemplate = document.getElementById('resenha-template');
     const themeBtn = document.getElementById('theme-toggle');
     const totalResenhasEl = document.getElementById('resenhas-total');
+    const btnMarcarTodo = document.getElementById('btn-marcar-todo');
+    const resenhaTemplate = document.getElementById('resenha-template');
 
-    /**
-     * Habilita el "tilt 3D" de la sección "Sobre mí" también en móvil.
-     *
-     * Diseño:
-     * - En desktop el efecto se activa con `group-hover:*` (CSS/Tailwind).
-     * - En móvil no existe hover real; al tocar una tarjeta alternamos la clase `is-flipped`.
-     *
-     * Nota: usamos una marca interna (`_flipDelegated`) para evitar registrar el listener más de una vez.
-     */
-    const sobreMi = document.getElementById('sobre-mi');
-    if (sobreMi && !sobreMi._flipDelegated) {
-        sobreMi.addEventListener('click', (e) => {
-            const card = e.target.closest('article.group');
-            if (!card) return;
-            card.classList.toggle('is-flipped');
-        });
-        sobreMi._flipDelegated = true;
-    }
+    let misResenhas = [];
 
-    /**
-     * Devuelve la fecha de hoy en formato `DD/MM/AAAA`.
-     *
-     * Se usa para asignar fecha a nuevas reseñas y para migrar reseñas antiguas
-     * que no tengan `fecha` en LocalStorage.
-     *
-     * @returns {string} Fecha formateada.
-     */
+    // --- FUNCIONES DE APOYO ---
     function fechaHoyFormateada() {
         const hoy = new Date();
-        const dd = String(hoy.getDate()).padStart(2, '0');
-        const mm = String(hoy.getMonth() + 1).padStart(2, '0');
-        const yyyy = hoy.getFullYear();
-        return `${dd}/${mm}/${yyyy}`;
+        return `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}/${hoy.getFullYear()}`;
     }
 
-    /**
-     * Normaliza una reseña para garantizar estructura estable en UI/LocalStorage.
-     *
-     * Soporta:
-     * - reseñas antiguas guardadas como string (solo texto)
-     * - reseñas modernas como objeto `{ texto, tipo, rating, fecha, leido }`
-     *
-     * Reglas:
-     * - `tipo` por defecto: "Personal"
-     * - `rating` por defecto: 5 (y debe ser número)
-     * - `fecha`: si no existe o es inválida, se rellena con la fecha de hoy (DD/MM/AAAA)
-     *
-     * @param {unknown} item
-     * @returns {{texto: string, tipo: string, rating: number, fecha: string, leido: boolean}}
-     */
     function normalizarResenha(item) {
-        const base = {
-            texto: '',
-            tipo: 'Personal',
-            rating: 5,
-            fecha: fechaHoyFormateada(),
-            leido: false,
-        };
-
-        if (typeof item === 'string') {
-            return { ...base, texto: item };
-        }
-
-        if (item && typeof item === 'object') {
-            const leido = typeof item.leido === 'boolean' ? item.leido : base.leido;
-            return {
-                ...base,
-                ...item,
-                rating: typeof item.rating === 'number' ? item.rating : base.rating,
-                fecha: typeof item.fecha === 'string' && item.fecha.trim()
-                    ? item.fecha
-                    : base.fecha,
-                leido,
-            };
-        }
-
-        return { ...base, texto: String(item) };
+        const base = { texto: '', tipo: 'Personal', rating: 5, fecha: fechaHoyFormateada(), leido: false };
+        if (typeof item === 'string') return { ...base, texto: item };
+        return { ...base, ...item, rating: Number(item.rating || 5) };
     }
 
-    /**
-     * Devuelve las clases Tailwind para el "badge" de tipo.
-     *
-     * @param {string} tipo
-     * @returns {string}
-     */
-    function claseParaTipo(tipo) {
-        return TIPO_CLASES[tipo] ?? TIPO_CLASES.Personal;
-    }
-
-    /**
-     * Convierte un rating numérico (1..5) en estrellas "★★★★★☆☆☆☆☆".
-     *
-     * @param {number} rating
-     * @returns {string}
-     */
-    function estrellasParaRating(rating) {
-        const n = Math.max(1, Math.min(5, rating || 5));
-        return '★'.repeat(n) + '☆'.repeat(5 - n);
-    }
-
-    /**
-     * Genera una etiqueta accesible para el botón "Eliminar" (screen readers).
-     *
-     * @param {{texto: string, tipo: string, rating: number}} params
-     * @returns {string}
-     */
-    function labelEliminarParaResenha({ texto, tipo, rating }) {
-        const snippet = String(texto || '').trim().slice(0, 40);
-        const sufijo = snippet.length === 40 ? '…' : '';
-        return `Eliminar reseña (${tipo}, ${rating} de 5): ${snippet}${sufijo}`;
-    }
-
-    /**
-     * Muestra un "toast" (notificación no intrusiva) en la esquina superior derecha.
-     *
-     * Detalles:
-     * - Crea el contenedor una sola vez (`#toast-container`) y reutiliza.
-     * - Es accesible: `role="status"` + `aria-live="polite"`.
-     * - Se auto-destruye tras `durationMs` y limpia el contenedor si queda vacío.
-     *
-     * @param {{accion: string, mensaje: string, durationMs?: number}} params
-     * @returns {void}
-     */
-    function mostrarAviso({ accion, mensaje, durationMs = 5000 }) {
-        let container = document.getElementById('toast-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'toast-container';
-            container.className = 'fixed top-4 right-4 z-[9999] flex flex-col gap-2';
-            document.body.appendChild(container);
-        }
-
+    function mostrarAviso({ mensaje }) {
         const toast = document.createElement('div');
-        toast.setAttribute('role', 'status');
-        toast.setAttribute('aria-live', 'polite');
-        toast.className = 'max-w-xs px-4 py-2 rounded-lg bg-slate-900/70 text-white text-sm shadow-lg border border-white/10 backdrop-blur-sm';
-        toast.textContent = `Acción: ${accion}. ${mensaje}`;
-
-        container.appendChild(toast);
-
-        window.setTimeout(() => {
-            toast.remove();
-            if (container && container.childElementCount === 0) container.remove();
-        }, durationMs);
+        toast.className = 'fixed bottom-5 right-5 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-xl z-[2000] border border-white/10 animate-pulse';
+        toast.textContent = mensaje;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     }
 
-    /**
-     * Resetea el formulario a sus valores iniciales.
-     *
-     * @returns {void}
-     */
-    function resetFormularioResenha() {
-        input.value = '';
-        tipoSelect.value = 'Personal';
-        ratingSelect.value = '5';
+    // --- LÓGICA DE PINTADO (Adaptada a tu Template) ---
+    function pintarTarjetas() {
+        lista.innerHTML = '';
+        if (totalResenhasEl) totalResenhasEl.textContent = String(misResenhas.length);
+
+        if (misResenhas.length === 0) {
+            lista.innerHTML = `<li class="col-span-full py-10 text-center text-slate-400">Aún no hay reseñas.</li>`;
+            return;
+        }
+
+        misResenhas.forEach((res, idx) => {
+            // 1. Clonamos el template
+            const clone = resenhaTemplate.content.cloneNode(true);
+
+            // 2. Buscamos los huecos y metemos la info
+            const li = clone.querySelector('li');
+            li.className = LI_BASE_CLASS;
+
+            const tipoSpan = clone.querySelector('[data-role="tipo"]');
+            tipoSpan.textContent = res.tipo;
+            tipoSpan.className += ` ${TIPO_CLASES[res.tipo] || TIPO_CLASES.Personal}`;
+
+            clone.querySelector('[data-role="texto"]').textContent = res.texto;
+            clone.querySelector('[data-role="estrellas"]').textContent = '★'.repeat(res.rating) + '☆'.repeat(5 - res.rating);
+            clone.querySelector('[data-role="fecha"]').textContent = res.fecha || fechaHoyFormateada();
+
+            const checkLeido = clone.querySelector('[data-role="leido"]');
+
+            // Si la reseña está marcada como leída en los datos, ponemos el check
+            if (res.leido) {
+                checkLeido.checked = true;
+            }
+
+            // Para que el usuario también pueda marcar/desmarcar a mano
+            checkLeido.onchange = () => {
+                res.leido = checkLeido.checked;
+                guardarYActualizar();
+            };
+
+            // 3. Botón eliminar
+            const btnEliminar = clone.querySelector('[data-role="eliminar"]');
+            btnEliminar.onclick = () => window.borrarResenha(idx);
+
+            lista.appendChild(clone);
+        });
     }
 
-    /**
-     * Sanea mínimos caracteres peligrosos para evitar inyección de HTML.
-     *
-     * Nota: además de esto, la UI usa `textContent` (no `innerHTML`) para imprimir
-     * texto de usuario, así que es una defensa extra.
-     *
-     * @param {unknown} texto
-     * @returns {string}
-     */
-    function limpiarTexto(texto) {
-        return String(texto).replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-
-    /**
-     * Normaliza el mensaje para mostrarlo de forma consistente.
-     * - recorta espacios
-     * - colapsa espacios repetidos
-     * - pone la primera letra en mayúscula
-     *
-     * @param {unknown} texto
-     * @returns {string}
-     */
-    function normalizarMensaje(texto) {
-        const limpio = String(texto).trim().replace(/\s+/g, ' ').toLowerCase();
-        if (!limpio) return '';
-        return limpio.charAt(0).toUpperCase() + limpio.slice(1);
-    }
-
-    /**
-     * Evita publicar duplicados exactos (texto + tipo + rating).
-     *
-     * @param {string} texto
-     * @param {string} tipo
-     * @param {number} rating
-     * @returns {boolean}
-     */
-    function esResenhaRepetida(texto, tipo, rating) {
-        return misResenhas.some(
-            (r) => r.texto === texto && r.tipo === tipo && r.rating === rating
-        );
-    }
-
-    themeBtn.setAttribute('aria-pressed', document.documentElement.classList.contains('dark'));
-    themeBtn.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.toggle('dark');
-        themeBtn.setAttribute('aria-pressed', isDark);
-    });
-
-    let misResenhas = (JSON.parse(localStorage.getItem(STORAGE_KEY)) || []).map(normalizarResenha);
-
-    /**
-     * Persistencia única del estado:
-     * - guarda `misResenhas` en LocalStorage (una sola clave)
-     * - repinta la lista para mantener UI y estado sincronizados (contador incluido)
-     *
-     * @returns {void}
-     */
+    // --- ACCIONES (Hogares de las funciones de borrar y actualizar) ---
     function guardarYActualizar() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(misResenhas));
         pintarTarjetas();
     }
 
-    /**
-     * Renderiza el listado de reseñas de forma eficiente.
-     *
-     * Responsabilidades:
-     * - Vacía el contenedor y actualiza el contador.
-     * - Muestra estado vacío cuando no hay reseñas.
-     * - Pinta tarjetas desde el `template` en un `DocumentFragment` (menos reflows).
-     * - Registra (una sola vez) un listener delegado para "Eliminar".
-     *
-     * @returns {void}
-     */
-    function pintarTarjetas() {
-        lista.innerHTML = '';
-        if (totalResenhasEl) totalResenhasEl.textContent = String(misResenhas.length);
-        if (misResenhas.length === 0) {
-            lista.style.columnCount = 1;
-            lista.innerHTML = `<li class="col-span-full w-full text-center text-gray-400 py-8 text-lg font-medium flex flex-col items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 32 32" class="w-10 h-10 text-slate-400 mx-auto"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 8l4 4M7.6 25.1c-.6.1-1.1-.4-1-1l.6-3.1c.1-.4.2-.7.5-1l13.3-13.3c.8-.8 2-.8 2.8 0l2.1 2.1c.8.8.8 2 0 2.8L12.6 25.1c-.3.3-.6.5-1 .6l-3 .6z"/></svg>
-                Aún no hay reseñas. ¡Sé el primero en escribir una!
-            </li>`;
-            return;
-        }
-        lista.style.removeProperty('column-count');
+    window.borrarResenha = (idx) => {
+        misResenhas.splice(idx, 1);
+        guardarYActualizar();
+        mostrarAviso({ mensaje: 'Reseña eliminada' });
+    };
 
-        const fragment = document.createDocumentFragment();
-        misResenhas.forEach((resenha, idx) => {
-            const { texto, tipo, rating, fecha, leido } = resenha;
-
-            const node = resenhaTemplate.content.firstElementChild.cloneNode(true);
-            node.className = `${LI_BASE_CLASS} resenha-item flex`;
-
-            const tipoEl = node.querySelector('[data-role="tipo"]');
-            const estrellasEl = node.querySelector('[data-role="estrellas"]');
-            const fechaEl = node.querySelector('[data-role="fecha"]');
-            const textoEl = node.querySelector('[data-role="texto"]');
-            const eliminarBtn = node.querySelector('[data-role="eliminar"]');
-            const leidoCheckbox = node.querySelector('[data-role="leido"]');
-
-            tipoEl.className = `inline-flex items-center px-2 py-0.5 rounded-full ${claseParaTipo(tipo)}`;
-            tipoEl.textContent = tipo;
-
-            estrellasEl.textContent = estrellasParaRating(rating);
-            estrellasEl.setAttribute('aria-label', `Puntuación ${rating} de 5`);
-
-            if (fechaEl) {
-                fechaEl.textContent = fecha;
-                fechaEl.setAttribute('aria-label', `Fecha de publicación: ${fecha}`);
-            }
-
-            // Seguridad: nunca insertamos el texto del usuario con innerHTML
-            textoEl.textContent = normalizarMensaje(texto);
-
-            eliminarBtn.dataset.idx = String(idx);
-            eliminarBtn.setAttribute('aria-label', labelEliminarParaResenha({ texto, tipo, rating }));
-
-            if (leidoCheckbox) {
-                leidoCheckbox.dataset.idx = String(idx);
-                leidoCheckbox.checked = Boolean(leido);
-                leidoCheckbox.setAttribute('aria-label', leidoCheckbox.checked ? 'Marcar como no leído' : 'Marcar como leído');
-            }
-
-            fragment.appendChild(node);
-        });
-        lista.appendChild(fragment);
-
-        // Delegar el evento click en los botones eliminar para evitar leaks de memoria y múltiples listeners
-        // (Esto solo los añade si aún no estaba el listener)
-        if (!lista._eventsDelegated) {
-            lista.addEventListener('click', function (e) {
-                const btn = e.target.closest('button[data-idx]');
-                if (btn) {
-                    const idx = Number(btn.getAttribute('data-idx'));
-                    borrarResenha(idx);
-                }
-            });
-            lista.addEventListener('change', function (e) {
-                const checkbox = e.target.closest('input[type="checkbox"][data-idx]');
-                if (!checkbox) return;
-                const idx = Number(checkbox.getAttribute('data-idx'));
-                if (!Number.isFinite(idx) || !misResenhas[idx]) return;
-                misResenhas[idx].leido = checkbox.checked;
-                guardarYActualizar();
-            });
-            lista._eventsDelegated = true;
+    // --- CARGA INICIAL (CONECTAR CON SERVIDOR) ---
+    async function cargarDatos() {
+        try {
+            const desdeServidor = await apiClient.getTasks();
+            misResenhas = desdeServidor.map(normalizarResenha);
+            pintarTarjetas();
+        } catch (e) {
+            console.error("Cargando de reserva local...");
+            misResenhas = (JSON.parse(localStorage.getItem(STORAGE_KEY)) || []).map(normalizarResenha);
+            pintarTarjetas();
         }
     }
 
-    pintarTarjetas();
-
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const mensaje = limpiarTexto(normalizarMensaje(input.value));
-        if (!mensaje) return;
 
-        const tipo = tipoSelect.value;
-        const rating = Number(ratingSelect.value) || 5;
-        if (esResenhaRepetida(mensaje, tipo, rating)) {
-            alert('Esa reseña ya ha sido publicada');
+        // guardamos el texto en una variable y quitamos los espacios vacíos
+        const textoResenha = mensaje.value.trim();
+
+        // Si el texto tiene menos de 3 letras, paramos aquí
+        if (textoResenha.length < 5) {
+            mostrarAviso({
+                mensaje: '¡La reseña es demasiado corta!'
+            });
             return;
         }
 
-        misResenhas.push({ texto: mensaje, tipo, rating, fecha: fechaHoyFormateada(), leido: false });
-        resetFormularioResenha();
-        guardarYActualizar();
+        const btn = document.getElementById('boton-publicar');
+        btn.disabled = true;
+        btn.textContent = 'Enviando...';
+
+        try {
+            const datosParaEnviar = {
+                texto: textoResenha, // Usamos la variable que ya limpiamos arriba
+                tipo: categoria.value,
+                rating: Number(estrellas.value)
+            };
+
+            const nueva = await apiClient.createTask(datosParaEnviar);
+
+            // Añadimos la respuesta del servidor a nuestra lista
+            misResenhas.push(normalizarResenha(nueva));
+            form.reset();
+            guardarYActualizar();
+            mostrarAviso({ mensaje: '¡Publicada con éxito!' });
+
+        } catch (error) {
+            console.error(error);
+            mostrarAviso({ mensaje: 'Error al publicar: ' + error.message });
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Publicar';
+        }
     });
 
-    /**
-     * Elimina una reseña por índice y sincroniza persistencia + UI.
-     *
-     * Nota: se expone en `window` para que sea accesible desde la delegación del click
-     * (y porque el proyecto ya venía con ese patrón).
-     *
-     * @param {number} indice
-     * @returns {void}
-     */
-    window.borrarResenha = (indice) => {
-        misResenhas.splice(indice, 1);
-        guardarYActualizar();
-        mostrarAviso({
-            accion: 'borrarResenha',
-            mensaje: 'Su mensaje ha sido eliminado correctamente',
-            durationMs: 5000,
+    btnMarcarTodo.addEventListener('click', () => {
+        // recorremos todas las reseñas y ponemos su estado en 'true'
+        misResenhas.forEach(r => {
+            r.leido = true;
         });
-    };
 
-    const buscador = document.getElementById('buscador');
-    buscador.addEventListener('input', () => {
-        const filtro = buscador.value.toLowerCase();
-        document.querySelectorAll('.resenha-item').forEach((tarjeta) => {
-            const texto = tarjeta.querySelector('.break-words')?.textContent?.toLowerCase() ?? '';
-            const visible = texto.includes(filtro);
-            tarjeta.classList.toggle('hidden', !visible);
-            tarjeta.classList.toggle('flex', visible);
-        });
+        // guardamos este cambio y volvemos a pintar las tarjetas
+        // esto es clave porque 'pintarTarjetas' leerá el nuevo estado 'leido: true'
+        guardarYActualizar();
+
+        // mostramos el mensaje de confirmación
+        mostrarAviso({ mensaje: 'Todo marcado como leído' });
     });
-}); 
+
+    themeBtn.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+    });
+
+    // Arrancamos la web cargando los datos
+    cargarDatos();
+});
