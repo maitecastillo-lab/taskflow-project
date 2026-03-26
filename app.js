@@ -235,22 +235,19 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     async function sincronizarConServidor() {
         try {
-            // pedimos a la API las reseñas reales
             const resenhasServidor = await apiClient.getTasks();
 
-            // si la conexión es buena y nos da una lista (aunque esté vacía [])
             if (Array.isArray(resenhasServidor)) {
-                // reemplazamos nuestras reseñas viejas por las que diga el servidor
+                // sobreescribimos con lo que diga el servidor (que es [])
                 misResenhas = resenhasServidor.map(normalizarResenha);
 
-                // Guardamos este cambio en el LocalStorage para que se actualice el contador
+                // guardamos este cambio (la lista vacía) en el LocalStorage
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(misResenhas));
 
-                // Repintamos las tarjetas,hara que si habia guardado en el localStorage se elimine
+                // Vuelve a contar las reseñas y actualiza el número de la pantalla
                 pintarTarjetas();
             }
         } catch (error) {
-            // Si no hay internet o falla la API, no borramos nada por si acaso
             console.warn("Usando datos locales: el servidor no respondió.");
         }
     }
