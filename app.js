@@ -1,4 +1,4 @@
-import { apiClient } from './src/api/client.js';
+import { apiClient } from '/src/api/client.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Configuración y Variables
