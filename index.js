@@ -1,3 +1,4 @@
+const path = require('path');
 require('dotenv').config(); // carga las variables del archivo .env 
 const express = require('express'); //la libreria para creal el servidor
 const cors = require('cors'); // el "permiso" para que pueda comunicarse entre ellos el fronted y backend
@@ -14,7 +15,7 @@ app.use(express.json()); //aqui entiende una tarea en formato JSON
 app.use('/api/tasks', taskRoutes); //para activar las rutas
 
 app.get('/', (req, res) => {
-  res.send('Servidor de TaskFlow funcionando correctamente');
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 
