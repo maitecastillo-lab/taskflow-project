@@ -3,8 +3,8 @@ import { apiClient } from '/src/api/client.js';
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. configuración y variables
     // usamos esta clave para guardar tus checks de "leído" en tu ordenador
-    const STORAGE_KEY = 'mis_resenhas_local'; 
-    
+    const STORAGE_KEY = 'mis_resenhas_local';
+
     const TIPO_CLASES = Object.freeze({
         Personal: 'bg-slate-500 text-white',
         Académica: 'bg-slate-400 text-slate-900',
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let misResenhas = [];
 
     // --- funciones de apoyo ---
-    
+
     // genera la fecha de hoy con formato dd/mm/aaaa
     function fechaHoyFormateada() {
         const hoy = new Date();
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return {
                     ...normalizarResenha(serverTask),
                     // si en tu pc estaba marcada como leída, le ponemos el check
-                    leido: localTask ? localTask.leido : false 
+                    leido: localTask ? localTask.leido : false
                 };
             });
             pintarTarjetas();
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const textoResenha = mensaje.value.trim();
-        
+
         if (textoResenha.length < 5) {
             mostrarAviso({ mensaje: '¡la reseña es demasiado corta!' });
             return;
@@ -187,31 +187,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     themeBtn.addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
     });
-    
+
     //mas antigua a mas reciente
+
+    // buscamos el select de orden en el html
     selectorOrden.addEventListener('change', () => {
         const valor = selectorOrden.value;
-        
-        // ordenamos la lista de reseñas
+
+        // ordenamos el array 'misResenhas'
         misResenhas.sort((a, b) => {
-            // convertimos las fechas de dd/mm/aaaa a formato aaaa-mm-dd
+            // 1. preparamos las fechas para comparar (dd/mm/aaaa -> aaaa-mm-dd)
             const fechaA = new Date(a.fecha.split('/').reverse().join('-'));
             const fechaB = new Date(b.fecha.split('/').reverse().join('-'));
 
-            // 1. primero comparamos por fecha
             const diferenciaFechas = fechaA - fechaB;
 
             if (diferenciaFechas !== 0) {
-                // si las fechas son distintas, ordenamos por fecha
+                // si las fechas son distintas, aplicamos el orden elegido
                 return valor === 'nuevo' ? fechaB - fechaA : fechaA - fechaB;
             } else {
-                // 2. si son del mismo día, usamos el ID para saber cuál se creó antes
-                // el id del servidor es un número que siempre crece
-                return valor === 'nuevo' ? b.id - a.id : a.id - b.id;
+                // 2. si son del mismo día, desempatamos con el ID (el más alto es el más nuevo)
+                // como el ID es un string ("177..."), lo convertimos a número para restar
+                return valor === 'nuevo' ? Number(b.id) - Number(a.id) : Number(a.id) - Number(b.id);
             }
         });
 
-        // después de ordenar el array en memoria, volvemos a dibujar las tarjetas
+        // ¡importante! volvemos a pintar para que se vea el cambio en pantalla
         pintarTarjetas();
     });
 
