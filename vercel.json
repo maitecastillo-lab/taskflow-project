@@ -6,7 +6,14 @@
     { "src": "src/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/v1/tasks", "dest": "server/src/index.js" },
+    { 
+      "src": "/api/v1/tasks/(.*)", 
+      "dest": "server/src/index.js" 
+    },
+    { 
+      "src": "/api/v1/tasks", 
+      "dest": "server/src/index.js" 
+    },
     { "src": "/src/(.*)", "dest": "/src/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]

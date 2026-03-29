@@ -15,8 +15,7 @@ const app = express();
 app.use(cors()); 
 app.use(express.json()); // Permite procesar el req.body de las reseñas
 
-// --- RUTAS API (Fase B) ---
-app.use('/api/v1/tasks', taskRoutes); 
+app.use('/api', taskRoutes);
 
 // Importante: usamos '../../' para salir de 'src' y 'server' hasta la raíz
 app.use(express.static(path.join(__dirname, '../../'))); 
