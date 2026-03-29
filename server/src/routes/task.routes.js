@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { getTasks, createTask, deleteTask } = require('../../src/controllers/task.controller.js');
+const taskController = require('../controllers/task.controller');
 
-// Mapeo de verbos HTTP a controladores
-router.get('/', getTasks);
-router.post('/', createTask);
-router.delete('/:id', deleteTask);
+// esto ya apunta a /api/v1/tasks/
+router.get('/', taskController.getTasks); 
+router.post('/', taskController.createTask); 
+
+router.delete('/:id', taskController.deleteTask); 
 
 module.exports = router;
