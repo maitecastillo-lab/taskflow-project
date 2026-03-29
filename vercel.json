@@ -7,11 +7,7 @@
   ],
   "routes": [
     { 
-      "src": "/api/v1/tasks/(.*)", 
-      "dest": "server/src/index.js" 
-    },
-    { 
-      "src": "/api/v1/tasks", 
+      "src": "/api/(.*)", 
       "dest": "server/src/index.js" 
     },
     { "src": "/src/(.*)", "dest": "/src/$1" },
