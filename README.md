@@ -1,4 +1,4 @@
-# 🚀TaskFlow: Gestión de Tareas (reseñas)
+# TaskFlow: Gestión de Tareas (reseñas)
 
 **TaskFlow** es una aplicación desarrollada para la gestión de tareas, pero adecuada a 
 mi proyecto que es mi portfolio es de crear, eliminar y marcar como vista una reseña
