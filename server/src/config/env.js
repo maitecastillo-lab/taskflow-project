@@ -1,12 +1,11 @@
-// ejecuta la configuración de dotenv
+// Carga las variables del archivo .env (solo para local)
 require('dotenv').config();
 
-// validadación de si el process.env.port no existe de error
-if (!process.env.PORT) {
-  throw new Error('El puerto no está definido'); 
-}
-
-// se exportar para que otros archivos lo usen
+// Exportamos el puerto. 
+// Si Render nos da uno (process.env.PORT), lo usamos.
+// Si no hay ninguno (como en tu PC), usamos el 3000 por defecto.
 module.exports = {
-  PORT: process.env.PORT
+    PORT: process.env.PORT || 3000,
+    // Si tienes otras variables como MONGO_URI, añádelas aquí abajo:
+    MONGO_URI: process.env.MONGO_URI 
 };
