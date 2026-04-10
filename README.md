@@ -11,3 +11,10 @@ Dividí todo por carpetas para no tener un solo archivo gigante y que sea más f
 - routes: Aquí definí las rutas de la API para que el frontend sepa a dónde llamar.
 - services: Aquí es donde se maneja el guardado de los datos.
    client.js: Este archivo es clave porque es el que conecta mi página con el servidor.
+# Tecnologias utilizadas
+- HTML
+- CSS
+- Tailwind
+- JavaScript
+- Express
+- Node.js
