@@ -1,12 +1,9 @@
 # TaskFlow: Gestión de Tareas (reseñas)
 
-**TaskFlow** es una aplicación desarrollada para la gestión de tareas, pero adecuada a 
-mi proyecto que es mi portfolio es de crear, eliminar y marcar como vista una reseña
-siendo la parte de marcar vista LocalStorage.
-
-El proyecto ha pasado por tres fases de evolución, desde una estructura básica hasta 
-una arquitectura profesional asistida por IA y un servidor robusto.
-
+**TaskFlow** es una aplicación desarrollada originalmente como un gestor de tareas, pero que
+he adecuado y personalizado para funcionar como un sistema de gestión de reseñas. 
+Es la pieza central de mi portfolio, donde demuestro la capacidad de adaptar requisitos 
+técnicos a un caso de uso real y profesional.
 
 ## Organización del Proyecto (Ramas)
 
