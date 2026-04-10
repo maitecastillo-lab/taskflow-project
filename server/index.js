@@ -10,7 +10,7 @@ const app = express();
 app.use(cors()); 
 app.use(express.json()); 
 
-// ESTO ARREGLA LA IMAGEN Y LOS SCRIPTS (Debe ir aquí arriba)
+// ESTO ARREGLA LA IMAGEN Y LOS SCRIPTS
 app.use(express.static(__dirname)); 
 
 // --- RUTAS API ---
