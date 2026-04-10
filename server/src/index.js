@@ -47,10 +47,12 @@ app.use((err, req, res, next) => {
 // --- EXPORTACIÓN PARA VERCEL ---
 module.exports = app;
 
-// Solo arranca el puerto si no estamos en el entorno de producción (Vercel)
-if (process.env.NODE_ENV !== 'production') {
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-        console.log(`Servidor Express profesional corriendo en http://localhost:${PORT}`);
-    });
-}
+// --- ARRANQUE DEL SERVIDOR (Configuración para Render) ---
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
+
+// Exportación (útil si algún día vuelves a usar Vercel)
+module.exports = app;
