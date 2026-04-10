@@ -5,10 +5,9 @@ Portfolio web con las tecnologias:
   - JavaScript moderno 
   - Tailwind. 
 
-# Demo local (cómo ejecutarlo)
+# COMO EJECUTARLO:
 
-- **Opción simple**: abre `index.html` en tu navegador.
-- **Recomendado**: usa un servidor local (por ejemplo la extensión **Live Server** en Cursor/VS Code) para evitar posibles restricciones del navegador.
+- abre `index.html` en tu navegador.
 
 # Funcionalidades y Experiencia de usuario
 
@@ -29,7 +28,7 @@ Portfolio web con las tecnologias:
 La sección `#recomendaciones` implementa un mini-sistema CRUD en el navegador:
 
 - Publicar reseña
-  - Campos: tipo, puntuación (1–5), texto.
+  - tipo, puntuación (1–5), texto, categoria.
   - Previene duplicados exactos (texto + tipo + rating).
   - Asigna fecha de publicación en formato **DD/MM/AAAA**.
 
@@ -50,7 +49,7 @@ La sección `#recomendaciones` implementa un mini-sistema CRUD en el navegador:
   - Un buscador filtra las reseñas por texto en tiempo real.
 
 - Estado vacío
-  - Si no hay reseñas, se muestra un mensaje amigable (“Aún no hay reseñas…”).
+  - Si no hay reseñas, se muestra un mensaje  (“Aún no hay reseñas…”).
 
 # Testing manual de la aplicación (documentación)
 - Prueba la app con la lista vacía
